@@ -1,0 +1,58 @@
+{
+  "Portail Gouvernemental": "Pòtay Gouvènmantal",
+  "République d'Haïti": "Repiblik Dayiti",
+  "Année fiscale": "Ane fiskal",
+  "main_layout": {
+    "app_title": "Pòtal Gouvènmantal",
+    "loading_fiscal_years": "Y ap chaje ane fiskal yo...",
+    "loading_ministries": "Y ap chaje ministè yo...",
+    "loading_initial_data": "Y ap chaje done inisyal yo..."
+  },
+  "root_tabs": {
+    "citoyen": "Paj Sitwayen",
+    "accueil": "Akèy",
+    "profil": "Pwofil",
+    "dashboard": "Tablo bò",
+    "parametres": "Paramèt"
+  },
+  "index_screen": {
+    "budget_section": {
+      "Transparence Budgétaire": "Transparans Bidjè",
+      "Transparence Budgétaire texte": "Konsilte kijan fon piblik yo depanse pa chak ministè pou ane fiskal",
+      "Budget Total": "Bidjè Total",
+      "Dépensé": "Depanse",
+      "Ministères": "Kantite Ministè"
+    },
+    "filters_section": {},
+    "piechart_section": {},
+    "barchart_section": {},
+    "reports_section": {}
+  },
+  "parametreScreen": {
+    "titre": "Paramèt",
+    "langue_interface": "Lang entèfas la",
+    "choisir_langue_affichage": "Chwazi lang pou afichaj",
+    "annee_fiscale_selectionnee": "Ane fiskal chwazi a",
+    "a_propos": "Konsènan",
+    "texte_a_propos": "Pòtal Gouvènman pou Transparans Bidjè",
+    "version_a_propos": "Vèsyon",
+    "acces_restreint": "Aksè limite",
+    "reserve_au_personnel_autorise": "Rezève pou pèsonèl otorize",
+    "agent_public": "Ajan piblik",
+    "administrateur": "Administratè",
+    "connexion": "Koneksyon"
+  },
+  "login_screen": {
+    "champs_obligatoires": "Tout chan yo obligatwa",
+    "compte_bloque": "Trop tantativ. Tanpri eseye ankò nan 5 minit.",
+    "erreur_reseau": "Erè rezo. Tanpri verifye koneksyon w lan.",
+    "timeout": "Tan repons depase. Tanpri eseye ankò.",
+    "entrez_votre_nom_utilisateur": "Antre non itilizatè ou",
+    "cacher_mot_de_passe": "Kache modpas la",
+    "afficher_mot_de_passe": "Montre modpas la",
+    "tentatives_echouees": "Tantativ echwe",
+    "compte_demo": "Konto demonstrasyon",
+    "interface_securisee": "Entèfas sa a sekirize e li rezève pou pèsonèl otorize sèlman.",
+    "tentative_non_autorisee": "Tout tantativ aksè san otorizasyon ap rapòte."
+  }
+}

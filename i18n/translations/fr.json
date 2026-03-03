@@ -1,0 +1,61 @@
+{
+  "Portail Gouvernemental": "Portail Gouvernemental",
+  "République d'Haïti": "République d'Haïti",
+  "Année fiscale": "Année fiscale",
+  "main_layout": {
+    "app_title": "Portail Gouvernemental",
+    "loading_fiscal_years": "Chargement des années fiscales...",
+    "loading_ministries": "Chargement des ministères...",
+    "loading_initial_data": "Chargement des données initiales..."
+  },
+  "root_tabs": {
+    "citoyen": "Vue Citoyen",
+    "accueil": "Accueil",
+    "profil": "Profil",
+    "dashboard": "Tableau de Bord",
+    "parametres": "Paramètres"
+  },
+  "index_screen": {
+    "budget_section": {
+      "Transparence Budgétaire": "Transparence Budgétaire",
+      "Transparence Budgétaire texte": "Consultez l'utilisation des fonds publics par ministère pour l'année fiscale",
+      "Budget Total": "Budget Total",
+      "Dépensé": "Dépensé",
+      "Ministères": "Ministères"
+    },
+    "filters_section": {},
+    "piechart_section": {},
+    "barchart_section": {},
+    "reports_section": {
+      "rapports_recents": "Rapports recents",
+      "aucun_rapport_disponible": "aucun_rapport_disponible"
+    }
+  },
+  "parametreScreen": {
+    "titre": "Paramètres",
+    "langue_interface": "Langue de l'interface",
+    "choisir_langue_affichage": "Choisir la langue d'affichage",
+    "annee_fiscale_sélectionnee": "Année fiscale sélectionnée",
+    "a_propos": "A propos",
+    "texte_a_propos": "Portail Gouvernemental de Transparence Budgétaire",
+    "version_a_propos": "Version",
+    "acces_restreint": "Accès restreint",
+    "reserve_au_personnel_autorise": "Réservé au personnel autorisé",
+    "agent_public": "Agent public",
+    "administrateur": "Administrateur",
+    "connexion": "Connexion"
+  },
+  "login_screen": {
+    "champs_obligatoires": "Tous les champs sont obligatoires",
+    "compte_bloque": "Trop de tentatives. Réessayez dans 5 minutes.",
+    "erreur_reseau": "Erreur de réseau. Vérifiez votre connexion.",
+    "timeout": "Temps de réponse dépassé. Réessayez.",
+    "entrez_votre_nom_utilisateur": "Entrez votre nom d'utilisateur",
+    "cacher_mot_de_passe": "Cacher le mot de passe",
+    "afficher_mot_de_passe": "Afficher le mot de passe",
+    "tentatives_echouees": "Tentatives échouées",
+    "compte_demo": "Compte de démonstration",
+    "interface_securisee": "Cette interface est sécurisée et réservée au personnel autorisé.",
+    "tentative_non_autorisee": "Toute tentative d'accès non autorisée sera signalée."
+  }
+}
