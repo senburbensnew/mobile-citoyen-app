@@ -4,9 +4,9 @@
   "Année fiscale": "Ane fiskal",
   "main_layout": {
     "app_title": "Pòtal Gouvènmantal",
-    "loading_fiscal_years": "Y ap chaje ane fiskal yo...",
-    "loading_ministries": "Y ap chaje ministè yo...",
-    "loading_initial_data": "Y ap chaje done inisyal yo..."
+    "oops" : "Oups!",
+    "loading" : "Chajman",
+    "retry_text" : "Eseye anko"
   },
   "root_tabs": {
     "citoyen": "Paj Sitwayen",

@@ -34,7 +34,7 @@ export default function Settings() {
 
   function handleRoleChange() {
     router.push({
-      pathname: "/login",
+      pathname: "(auth)/login",
     });
   }
 

@@ -4,9 +4,9 @@
   "Année fiscale": "Année fiscale",
   "main_layout": {
     "app_title": "Portail Gouvernemental",
-    "loading_fiscal_years": "Chargement des années fiscales...",
-    "loading_ministries": "Chargement des ministères...",
-    "loading_initial_data": "Chargement des données initiales..."
+    "oops" : "Oups!",
+    "loading" : "Chargement",
+    "retry_text" : "Réessayer"
   },
   "root_tabs": {
     "citoyen": "Vue Citoyen",
