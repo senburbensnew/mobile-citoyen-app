@@ -2,6 +2,7 @@ import { View, Text, Dimensions, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { Dropdown } from "react-native-element-dropdown";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { setSelectedMinistry } from "@/store/selectedMinistrySlice";
@@ -10,6 +11,7 @@ import { useApi } from "@/hooks/useApi";
 import { setMinistries } from "@/store/ministriesSlice";
 
 const FiltersSection = ({ showDropdownOnly = false }) => {
+  const { t } = useTranslation();
   const ministriesState = useSelector((state: RootState) => state.ministries);
   const selectedMinistry = useSelector(
     (state: RootState) => state.selectedMinistry
@@ -39,8 +41,6 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
 
   useEffect(() => {
     if (ministriesData && ministriesData.length > 0) {
-      console.log(ministriesData);
-
       // Create a new array with designation field replaced by "id - designation"
       const modifiedData = ministriesData.map((ministry) => ({
         ...ministry,
@@ -65,7 +65,7 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
             style={styles.dropdown}
             data={ministriesState?.ministries || []}
             search
-            searchPlaceholder="Rechercher ministère"
+            searchPlaceholder={t("index_screen.filters_section.search_placeholder")}
             labelField="designation"
             renderItem={(item) => (
               <View style={{ padding: 10 }}>
@@ -78,7 +78,7 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
               </View>
             )}
             valueField="id"
-            placeholder="🏛️ Choisissez un ministère"
+            placeholder={`🏛️ ${t("index_screen.filters_section.dropdown_placeholder")}`}
             value={selectedMinistry.selectedMinistry?.id}
             onChange={(item) => {
               handleMinistryChange(item);
@@ -133,10 +133,10 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
                       color: "#1F2937",
                     }}
                   >
-                    Filtres & Analyses
+                    {t("index_screen.filters_section.title")}
                   </Text>
                   <Text style={{ fontSize: 10, color: "#4B5563" }}>
-                    Filtrez par ministère
+                    {t("index_screen.filters_section.subtitle")}
                   </Text>
                 </View>
               </View>
@@ -179,10 +179,10 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
               style={styles.dropdown}
               data={ministriesState?.ministries || []}
               search
-              searchPlaceholder="Rechercher ministère"
+              searchPlaceholder={t("index_screen.filters_section.search_placeholder")}
               labelField="designation"
               valueField="id"
-              placeholder="🏛️ Choisissez un ministère"
+              placeholder={`🏛️ ${t("index_screen.filters_section.dropdown_placeholder")}`}
               value={selectedMinistry.selectedMinistry?.id}
               onChange={(item) => {
                 handleMinistryChange(item);

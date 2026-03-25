@@ -11,19 +11,18 @@ import {
 } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { t } from "i18next";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
 
 const Citoyen = () => {
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
     logout();
-    router.replace("/(root)"); // ✅ redirect
+    // AuthGuard in _layout.tsx redirects to /(auth)/login once user becomes null
   };
 
   const OtherCard = ({
@@ -123,7 +122,7 @@ const Citoyen = () => {
                       <Path d="m9 11 3 3L22 4" />
                     </Svg>
                     <Text className="text-green-100 text-xs font-medium">
-                      En ligne
+                      {t("common.online")}
                     </Text>
                   </View>
                 </View>
@@ -135,7 +134,7 @@ const Citoyen = () => {
           style={styles.cardWrapper}
           className="justify-center items-center"
         >
-          <OtherCard title={"⚡ Informations Personnelles"}>
+          <OtherCard title={`⚡ ${t("profile_screen.personal_info")}`}>
             <View style={{ gap: 16 }}>
               <View>
                 <Text
@@ -146,7 +145,7 @@ const Citoyen = () => {
                     color: "#374151",
                   }}
                 >
-                  Nom complet
+                  {t("profile_screen.full_name")}
                 </Text>
                 <TextInput
                   style={{
@@ -172,7 +171,7 @@ const Citoyen = () => {
                     color: "#374151",
                   }}
                 >
-                  Adresse email
+                  {t("profile_screen.email")}
                 </Text>
                 <TextInput
                   style={{
@@ -200,7 +199,7 @@ const Citoyen = () => {
                     color: "#374151",
                   }}
                 >
-                  Téléphone
+                  {t("profile_screen.phone")}
                 </Text>
                 <TextInput
                   style={{
@@ -227,7 +226,7 @@ const Citoyen = () => {
                     color: "#374151",
                   }}
                 >
-                  Département
+                  {t("profile_screen.department")}
                 </Text>
                 <TextInput
                   style={{
@@ -245,7 +244,7 @@ const Citoyen = () => {
               </View>
             </View>
           </OtherCard>
-          <OtherCard title={"🛠️ Preferences"}>
+          <OtherCard title={`🛠️ ${t("profile_screen.preferences")}`}>
             <View style={{ gap: 20 }}>
               <View
                 style={{
@@ -262,12 +261,12 @@ const Citoyen = () => {
                       color: "#111827",
                     }}
                   >
-                    Notifications email
+                    {t("profile_screen.email_notifs")}
                   </Text>
                   <Text
                     style={{ fontSize: 14, color: "#6b7280", marginTop: 2 }}
                   >
-                    Recevoir les notifications par email
+                    {t("profile_screen.email_notifs_desc")}
                   </Text>
                 </View>
                 <Switch />
@@ -287,19 +286,19 @@ const Citoyen = () => {
                       color: "#111827",
                     }}
                   >
-                    Notifications push
+                    {t("profile_screen.push_notifs")}
                   </Text>
                   <Text
                     style={{ fontSize: 14, color: "#6b7280", marginTop: 2 }}
                   >
-                    Alertes en temps réel
+                    {t("profile_screen.push_notifs_desc")}
                   </Text>
                 </View>
                 <Switch />
               </View>
             </View>
           </OtherCard>
-          <OtherCard title={"Actions Rapides"}>
+          <OtherCard title={t("profile_screen.quick_actions")}>
             <View style={{ gap: 12 }}>
               {/* Change Password Button */}
               <Pressable
@@ -353,7 +352,7 @@ const Citoyen = () => {
                       color: "#000000",
                     }}
                   >
-                    Changer le mot de passe
+                    {t("profile_screen.change_password")}
                   </Text>
                 </View>
               </Pressable>
@@ -408,14 +407,14 @@ const Citoyen = () => {
                       color: "#000000",
                     }}
                   >
-                    Gestion 2FA
+                    {t("profile_screen.manage_2fa")}
                   </Text>
                 </View>
               </Pressable>
             </View>
           </OtherCard>
           <OtherCard
-            title={"Zones de securite"}
+            title={t("profile_screen.security_zone")}
             titleColor={"text-red-700"}
             borderColor={"border border-red-500"}
           >
@@ -426,12 +425,11 @@ const Citoyen = () => {
                     <Text className="text-red-600 text-base font-bold">🛡️</Text>
                   </View>
                   <Text className="text-sm text-red-700 font-medium">
-                    Session sécurisée inactive
+                    {t("profile_screen.session_inactive")}
                   </Text>
                 </View>
                 <Text className="text-xs text-red-600">
-                  Votre session n'est pas protégée par authentification à deux
-                  facteurs
+                  {t("profile_screen.session_desc")}
                 </Text>
               </View>
               <Svg
@@ -454,7 +452,7 @@ const Citoyen = () => {
                 onPress={handleLogout}
               >
                 <FontAwesome5 name="sign-out-alt" size={14} color="#fff" />
-                <Text style={styles.logoutText}>{t("Déconnexion")}</Text>
+                <Text style={styles.logoutText}>{t("profile_screen.logout")}</Text>
               </TouchableOpacity>
             </>
           </OtherCard>
@@ -468,10 +466,10 @@ const Citoyen = () => {
             }}
           >
             <Text className="text-center text-gray-500 text-xs">
-              Portail Gouvernemental de Transparence Budgétaire
+              {t("profile_screen.app_footer")}
             </Text>
             <Text className="text-center text-gray-500 text-xs mt-1">
-              République d'Haïti • Version 1.0
+              {t("profile_screen.app_version")}
             </Text>
           </View>
         </View>

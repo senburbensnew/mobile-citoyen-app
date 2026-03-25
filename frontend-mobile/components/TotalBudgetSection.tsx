@@ -1,70 +1,18 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Dimensions,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
-import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
-import api from "@/lib/api";
-import {
-  setExpenses,
-  setMinistriesCount,
-  setTotalBudget,
-} from "@/store/totalBudgetInfosSlice";
 import { toMillions } from "@/services/helpers";
+import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { useSelector } from "react-redux";
 
 const TotalBudgetSection = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState<boolean>(false);
 
   const { selectedFiscalYear } = useSelector(
-    (state: RootState) => state.fiscalYears
+    (state: RootState) => state.fiscalYears,
   );
   const totalBudgetState = useSelector((state: RootState) => state.budget);
-
-  useEffect(() => {
-    const fetchFiscalYearData = async () => {
-      if (!selectedFiscalYear?.anneeFiscale) return;
-
-      setLoading(true);
-      try {
-        const [budgetResp, ministriesResp] = await Promise.all([
-          api.get(`/Public/depenses/total/${selectedFiscalYear.anneeFiscale}`),
-          api.get(
-            `/Public/nombres/ministere${selectedFiscalYear.anneeFiscale}`
-          ),
-        ]);
-
-        const budgetData = budgetResp.data;
-        const ministriesData = ministriesResp.data;
-
-        console.log(budgetData, totalBudgetState);
-
-        dispatch(setTotalBudget(budgetData.montantAlloue));
-        dispatch(setExpenses(budgetData.montantDepense));
-        dispatch(setMinistriesCount(ministriesData.totalMinistere));
-      } catch (error) {
-        console.error("Error fetching fiscal year data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFiscalYearData();
-  }, [selectedFiscalYear, dispatch]);
-
-  // Helper function to format numbers consistently
-  const formatBudgetValue = (value: number | undefined) => {
-    if (!value) return "0";
-    return value.toLocaleString();
-  };
 
   return (
     <View
@@ -110,12 +58,8 @@ const TotalBudgetSection = () => {
 
               <View style={styles.valueWrapper}>
                 <Text style={styles.boxValue} numberOfLines={1}>
-                  {loading ? (
-                    <Text style={styles.placeholderText}>...</Text>
-                  ) : (
-                    `${totalBudgetState.totalBudget} `
-                  )}
-                  <Text style={styles.unitText}>Md HTG</Text>
+                  {`${toMillions(totalBudgetState.totalBudget)} `}
+                  <Text style={styles.unitText}>M HTG</Text>
                 </Text>
               </View>
             </View>
@@ -133,12 +77,8 @@ const TotalBudgetSection = () => {
               </Text>
               <View style={styles.valueWrapper}>
                 <Text style={styles.boxValue} numberOfLines={1}>
-                  {loading ? (
-                    <Text style={styles.placeholderText}>...</Text>
-                  ) : (
-                    `${totalBudgetState.expenses} `
-                  )}
-                  <Text style={styles.unitText}>Md HTG</Text>
+                  {`${toMillions(totalBudgetState.expenses)} `}
+                  <Text style={styles.unitText}>M HTG</Text>
                 </Text>
               </View>
             </View>
@@ -153,11 +93,7 @@ const TotalBudgetSection = () => {
               </Text>
               <View style={styles.valueWrapper}>
                 <Text style={styles.boxValue} numberOfLines={1}>
-                  {loading ? (
-                    <Text style={styles.placeholderText}>...</Text>
-                  ) : (
-                    totalBudgetState.ministriesCount
-                  )}
+                  {totalBudgetState.ministriesCount}
                 </Text>
               </View>
             </View>
@@ -165,11 +101,6 @@ const TotalBudgetSection = () => {
         </View>
       </LinearGradient>
 
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size={"large"} color={"#004AAD"} />
-        </View>
-      )}
     </View>
   );
 };
@@ -238,11 +169,6 @@ const styles = StyleSheet.create({
     height: 24, // Fixed height for value wrapper
     justifyContent: "center",
   },
-  placeholderText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   bottomRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -266,17 +192,5 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     minHeight: 60, // Fixed minimum height for card box
-  },
-  loadingOverlay: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.3)",
-    borderRadius: 16,
   },
 });

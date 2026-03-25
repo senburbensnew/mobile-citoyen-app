@@ -1,28 +1,27 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  Dimensions,
-  ActivityIndicator,
-} from "react-native";
-import Svg, { G, Path, Circle } from "react-native-svg";
-import { pie, arc } from "d3-shape";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useAuth } from "@/hooks/useAuth";
 import api, { API_BASE } from "@/lib/api";
 import { toMillions } from "@/services/helpers";
-import { useAuth } from "@/hooks/useAuth";
+import { RootState } from "@/store";
+import { arc, pie } from "d3-shape";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import Svg, { Circle, G, Path } from "react-native-svg";
+import { useSelector } from "react-redux";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -83,12 +82,12 @@ export default function SectionsComponent({}) {
       pie<SectionData>()
         .value((d) => d.value)
         .sort(null)(data),
-    [data]
+    [data],
   );
   const arcGen = useMemo(
     () =>
       arc().innerRadius(innerRadius).outerRadius(outerRadius).cornerRadius(4),
-    []
+    [],
   );
 
   const scale = useSharedValue(0);
@@ -104,10 +103,10 @@ export default function SectionsComponent({}) {
   }));
 
   const { selectedFiscalYear } = useSelector(
-    (state: RootState) => state.fiscalYears
+    (state: RootState) => state.fiscalYears,
   );
   const { selectedMinistry } = useSelector(
-    (state: RootState) => state.selectedMinistry
+    (state: RootState) => state.selectedMinistry,
   );
 
   useEffect(() => {
@@ -119,7 +118,7 @@ export default function SectionsComponent({}) {
         setError(null);
 
         const response = await api.get(
-          `${API_BASE}/Depense/ministere/section/${selectedFiscalYear.anneeFiscale}/${ministereId}`
+          `${API_BASE}/depense/ministere/section/${selectedFiscalYear.anneeFiscale}/${ministereId}`,
         );
 
         const articles = response.data[0]?.articles || [];
@@ -144,7 +143,7 @@ export default function SectionsComponent({}) {
         if (error.response?.status === 404) {
           setError(
             // "Endpoint des articles non trouvé - Vérifiez l'URL de l'API"
-            "Aucune donnée"
+            "Aucune donnée",
           );
         } else if (error.response?.status === 500) {
           setError("Erreur serveur - Veuillez réessayer plus tard");
@@ -177,7 +176,7 @@ export default function SectionsComponent({}) {
   const handlePressArc = (
     index: number,
     centroid: [number, number],
-    d: any
+    d: any,
   ) => {
     const next = selected === index ? null : index;
     setSelected(next);

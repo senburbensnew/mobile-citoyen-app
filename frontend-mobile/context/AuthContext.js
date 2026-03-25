@@ -1,6 +1,9 @@
 import { createContext, useState, useEffect } from "react";
 import { saveToken, getToken, removeToken } from "../lib/storage";
 import api from "../lib/api";
+import { store } from "../store";
+import { clearSelectedMinistry } from "../store/selectedMinistrySlice";
+import { setInitialDataLoaded } from "../store/initialDataLoaded";
 
 export const AuthContext = createContext();
 
@@ -34,10 +37,10 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Réponse invalide du serveur");
       }
       await saveToken(data.token);
-      console.log(parseJwt(data.token));
-      setUser(parseJwt(data.token).unique_name);
-      setRole(parseJwt(data.token).role);
-      setMinistereId(parseJwt(data.token).MinistereId);
+      const payload = parseJwt(data.token);
+      setUser(payload.unique_name);
+      setRole(payload.role);
+      setMinistereId(payload.MinistereId);
       return true;
     } catch (err) {
       if (err.response) {
@@ -59,6 +62,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setRole(null);
     setMinistereId(null);
+    store.dispatch(clearSelectedMinistry());
+    store.dispatch(setInitialDataLoaded(false));
   };
 
   const parseJwt = (token) => {

@@ -1,44 +1,67 @@
-import { View, Text, Dimensions, StyleSheet } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { RootState } from "@/store";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import LiveBarChart from "./LiveBarChart";
 
+const { width } = Dimensions.get("window");
+
 const BarChartSection = () => {
+  const { t } = useTranslation();
+  const { selectedFiscalYear } = useSelector(
+    (state: RootState) => state.fiscalYears,
+  );
+
   return (
-    <View className="justify-center items-center">
-      <View style={styles.ministryContainer}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.title}>📈 Évolution mensuelle</Text>
-            <Text style={styles.subtitle}>
-              Suivi des allocations et dépenses par mois par année fiscale
+    <View style={styles.card}>
+      <View style={styles.accentBar} />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View style={styles.iconBox}>
+            <MaterialIcons name="bar-chart" size={20} color="#059669" />
+          </View>
+          <View style={styles.headerTextBlock}>
+            <Text style={styles.title}>{t("index_screen.barchart_section.title")}</Text>
+            <Text style={styles.subtitle}>{t("index_screen.barchart_section.subtitle")}</Text>
+          </View>
+        </View>
+        {selectedFiscalYear && (
+          <View style={styles.yearBadge}>
+            <Text style={styles.yearBadgeText}>
+              {selectedFiscalYear.anneeFiscale}
             </Text>
           </View>
+        )}
+      </View>
 
-          {/* Legends */}
-          <View style={styles.legendsContainer}>
-            <View style={styles.legendItem}>
-              <View
-                style={[styles.legendDot, { backgroundColor: "#10b981" }]}
-              />
-              <Text style={styles.legendText}>Allocations</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View
-                style={[styles.legendDot, { backgroundColor: "#ef4444" }]}
-              />
-              <Text style={styles.legendText}>Dépenses</Text>
-            </View>
-          </View>
+      {/* Legend pills */}
+      <View style={styles.legendRow}>
+        <View style={[styles.legendPill, { backgroundColor: "#F0FDF4" }]}>
+          <View style={[styles.dot, { backgroundColor: "#10b981" }]} />
+          <Text style={[styles.legendText, { color: "#065F46" }]}>
+            {t("index_screen.barchart_section.allocations")}
+          </Text>
         </View>
+        <View style={[styles.legendPill, { backgroundColor: "#FEF2F2" }]}>
+          <View style={[styles.dot, { backgroundColor: "#ef4444" }]} />
+          <Text style={[styles.legendText, { color: "#991B1B" }]}>
+            {t("index_screen.barchart_section.depenses")}
+          </Text>
+        </View>
+      </View>
 
-        {/* Chart */}
-        <View style={styles.chartContainer}>
-          <LiveBarChart
-            showLegend={false}
-            allocationsBarColor="#10b981"
-            depensesBarColor="#ef4444"
-          />
-        </View>
+      <View style={styles.divider} />
+
+      {/* Chart */}
+      <View style={styles.chartWrapper}>
+        <LiveBarChart
+          showLegend={false}
+          allocationsBarColor="#10b981"
+          depensesBarColor="#ef4444"
+        />
       </View>
     </View>
   );
@@ -46,58 +69,100 @@ const BarChartSection = () => {
 
 export default BarChartSection;
 
-const { width } = Dimensions.get("window");
-
 const styles = StyleSheet.create({
-  ministryContainer: {
+  card: {
     width: width * 0.95,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    overflow: "hidden",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  headerRow: {
+  accentBar: {
+    height: 4,
+    backgroundColor: "#10b981",
+  },
+  header: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 10,
   },
-  headerTextContainer: { flex: 1 },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  iconBox: {
+    width: 38,
+    height: 38,
+    backgroundColor: "#ECFDF5",
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  headerTextBlock: {
+    flex: 1,
+  },
   title: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#1F2937",
-    marginBottom: 4,
+    color: "#111827",
   },
   subtitle: {
-    fontSize: 12,
-    color: "#6B7280",
+    fontSize: 11,
+    color: "#9CA3AF",
+    marginTop: 2,
   },
-  legendsContainer: {
-    alignItems: "flex-start",
-    marginLeft: 8,
+  yearBadge: {
+    backgroundColor: "#EFF6FF",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
   },
-  legendItem: {
+  yearBadgeText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#1D4ED8",
+  },
+  legendRow: {
+    flexDirection: "row",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  legendPill: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    gap: 5,
   },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 6,
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
   },
   legendText: {
     fontSize: 11,
-    color: "#6B7280",
-    fontWeight: "500",
+    fontWeight: "600",
   },
-  chartContainer: {
-    marginTop: 8,
+  divider: {
+    height: 1,
+    backgroundColor: "#F3F4F6",
+    marginHorizontal: 16,
+    marginBottom: 4,
+  },
+  chartWrapper: {
+    paddingHorizontal: 8,
   },
 });

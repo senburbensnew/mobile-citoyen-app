@@ -1,42 +1,47 @@
-import { View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store";
-import { useEffect } from "react";
 import api from "@/lib/api";
-import { toMillions } from "@/services/helpers";
+import { RootState } from "@/store";
 import {
   setExpenses,
   setMinistriesCount,
   setTotalBudget,
 } from "@/store/totalBudgetInfosSlice";
-import FiltersSection from "./FiltersSection";
-import TotalBudgetSection from "./TotalBudgetSection";
-import PieChartSection from "./PieChartSection";
+import { useEffect, useRef } from "react";
+import { View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import BarChartSection from "./BarChartSection";
-import Map from "./Map";
+import FiltersSection from "./FiltersSection";
+import PieChartSection from "./PieChartSection";
+import TotalBudgetSection from "./TotalBudgetSection";
 
 const VueEnsemble = () => {
   const dispatch = useDispatch();
   const { selectedFiscalYear } = useSelector(
-    (state: RootState) => state.fiscalYears
+    (state: RootState) => state.fiscalYears,
   );
+  // Skip initial mount — startup already preloaded data for the default year
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
     const fetchFiscalYearData = async () => {
       if (!selectedFiscalYear?.anneeFiscale) return;
       try {
         const [budgetResp, ministriesResp] = await Promise.all([
-          api.get(`/Public/depenses/total/${selectedFiscalYear.anneeFiscale}`),
+          api.get(`/depense/total/${selectedFiscalYear.anneeFiscale}`),
           api.get(
-            `/Public/nombres/ministere${selectedFiscalYear.anneeFiscale}`
+            `/referentiel/nombres/ministere/${selectedFiscalYear.anneeFiscale}`,
           ),
         ]);
 
         const budgetData = budgetResp.data;
         const ministriesData = ministriesResp.data;
 
-        dispatch(setTotalBudget(toMillions(budgetData.montantAlloue)));
-        dispatch(setExpenses(toMillions(budgetData.montantDepense)));
+        dispatch(setTotalBudget(budgetData.montantAlloue));
+        dispatch(setExpenses(budgetData.montantDepense));
         dispatch(setMinistriesCount(ministriesData.totalMinistere));
       } catch (error) {
         console.error("Error fetching fiscal year data:", error);

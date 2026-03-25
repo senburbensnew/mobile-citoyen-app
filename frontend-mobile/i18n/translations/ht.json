@@ -4,9 +4,26 @@
   "Année fiscale": "Ane fiskal",
   "main_layout": {
     "app_title": "Pòtal Gouvènmantal",
-    "oops" : "Oups!",
-    "loading" : "Chajman",
-    "retry_text" : "Eseye anko"
+    "oops": "Oups!",
+    "loading": "Chajman",
+    "retry_text": "Eseye anko"
+  },
+  "common": {
+    "close": "Fèmen",
+    "cancel": "Anile",
+    "delete": "Efase",
+    "online": "Anliy",
+    "show_more": "Montre plis (+{{count}})",
+    "show_less": "Montre mwens",
+    "md_htg": "Md HTG",
+    "m_htg": "M HTG",
+    "montant_alloue": "Montan Aloye",
+    "montant_engage": "Montan Angaje",
+    "montant_depense": "Montan Depanse",
+    "no_data": "Pa gen done disponib",
+    "error_server": "Erè sèvè - Tanpri eseye ankò pita",
+    "error_network": "Erè koneksyon - Tanpri verifye rezo ou",
+    "error_loading": "Erè pandan chajman done yo"
   },
   "root_tabs": {
     "citoyen": "Paj Sitwayen",
@@ -16,6 +33,16 @@
     "parametres": "Paramèt"
   },
   "index_screen": {
+    "tabs": {
+      "apercu_budgetaire": "Apèsi Bidjè",
+      "vue_detaillee": "Vi Detaye",
+      "projets": "Pwojè"
+    },
+    "dashboard_header": {
+      "dashboard": "Tablo bò",
+      "role": "Wòl",
+      "ministere": "Ministè"
+    },
     "budget_section": {
       "Transparence Budgétaire": "Transparans Bidjè",
       "Transparence Budgétaire texte": "Konsilte kijan fon piblik yo depanse pa chak ministè pou ane fiskal",
@@ -23,10 +50,85 @@
       "Dépensé": "Depanse",
       "Ministères": "Kantite Ministè"
     },
-    "filters_section": {},
-    "piechart_section": {},
-    "barchart_section": {},
+    "filters_section": {
+      "title": "Filtre & Analiz",
+      "subtitle": "Filtre pa ministè",
+      "search_placeholder": "Chèche ministè",
+      "dropdown_placeholder": "Chwazi yon ministè"
+    },
+    "piechart_section": {
+      "title": "Reparti bidjè",
+      "subtitle_default": "Distribisyon pa atik"
+    },
+    "barchart_section": {
+      "title": "Evolisyon mansyèl",
+      "subtitle": "Alokasyon & depans pa mwa",
+      "allocations": "Alokasyon",
+      "depenses": "Depans",
+      "allocation": "Alokasyon",
+      "solde": "Balans"
+    },
     "reports_section": {}
+  },
+  "livepiechart": {
+    "loading": "Chajman done yo...",
+    "error_title": "Erè chajman",
+    "no_data": "Pa gen done disponib pou peryòd sa a",
+    "repartition_title": "Reparti depans yo",
+    "article": "Atik",
+    "section": "Seksyon",
+    "error_404": "Pa gen done",
+    "error_500": "Erè sèvè - Tanpri eseye ankò pita",
+    "error_network": "Erè koneksyon - Tanpri verifye rezo ou",
+    "error_generic": "Erè pandan chajman done yo"
+  },
+  "profile_screen": {
+    "online": "Anliy",
+    "personal_info": "Enfòmasyon Pèsonèl",
+    "full_name": "Non konplè",
+    "email": "Adrès imèl",
+    "phone": "Telefòn",
+    "department": "Depatman",
+    "preferences": "Preferans",
+    "email_notifs": "Notifikasyon imèl",
+    "email_notifs_desc": "Resevwa notifikasyon pa imèl",
+    "push_notifs": "Notifikasyon push",
+    "push_notifs_desc": "Alèt an tan reyèl",
+    "quick_actions": "Aksyon Rapid",
+    "change_password": "Chanje modpas",
+    "manage_2fa": "Jesyon 2FA",
+    "security_zone": "Zòn sekirite",
+    "session_inactive": "Sesyon sekirize inaktif",
+    "session_desc": "Sesyon ou a pa pwoteje pa otantifikasyon de faktè",
+    "logout": "Dekonekte",
+    "app_footer": "Pòtal Gouvènman pou Transparans Bidjè",
+    "app_version": "Repiblik Dayiti • Vèsyon 1.0"
+  },
+  "notifications_screen": {
+    "title": "Notifikasyon",
+    "subtitle": "Aktialite gouvènmantal",
+    "total": "Total",
+    "unread": "Pa li",
+    "read": "Li deja",
+    "filter": "Filtre",
+    "mark_all_read": "Li tout",
+    "status": "Estati",
+    "category": "Kategori",
+    "search": "Chèche",
+    "search_placeholder": "Chèche nan notifikasyon yo...",
+    "no_notifications": "Pa gen notifikasyon",
+    "no_notifications_desc": "Ou pa gen notifikasyon pou kounye a.",
+    "delete_title": "Efase notifikasyon",
+    "delete_confirm": "Eske ou sèten ou vle efase notifikasyon sa a?",
+    "filter_all": "Tout notifikasyon",
+    "filter_unread": "Pa li",
+    "filter_urgent": "Ijan",
+    "category_all": "Tout kategori",
+    "category_rapport": "Rapò",
+    "category_directive": "Dirèktiv",
+    "category_info": "Enfòmasyon",
+    "select_filter": "Seleksyone yon filtre",
+    "select_category": "Seleksyone yon kategori"
   },
   "parametreScreen": {
     "titre": "Paramèt",

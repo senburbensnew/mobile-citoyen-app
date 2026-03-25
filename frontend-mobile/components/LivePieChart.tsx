@@ -1,29 +1,30 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  TouchableOpacity,
-  TouchableNativeFeedback,
-  Modal,
-  FlatList,
-  ActivityIndicator,
-  Dimensions,
-  Platform,
-} from "react-native";
-import Svg, { G, Path, Circle } from "react-native-svg";
-import { pie, arc } from "d3-shape";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
 import api, { API_BASE } from "@/lib/api";
 import { toMillions } from "@/services/helpers";
+import { RootState } from "@/store";
+import { arc, pie } from "d3-shape";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import Svg, { Circle, G, Path } from "react-native-svg";
+import { useSelector } from "react-redux";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -85,6 +86,7 @@ const AndroidTouchable = ({ children, onPress, style }: any) => {
 };
 
 export default function DonutChart() {
+  const { t } = useTranslation();
   const [data, setData] = useState<ArticleData[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
@@ -104,12 +106,12 @@ export default function DonutChart() {
       pie<ArticleData>()
         .value((d: { value: any }) => d.value)
         .sort(null)(data),
-    [data]
+    [data],
   );
   const arcGen = useMemo(
     () =>
       arc().innerRadius(innerRadius).outerRadius(outerRadius).cornerRadius(4),
-    []
+    [],
   );
 
   // Show only 3 items if showAll is false
@@ -128,10 +130,10 @@ export default function DonutChart() {
   }));
 
   const { selectedFiscalYear } = useSelector(
-    (state: RootState) => state.fiscalYears
+    (state: RootState) => state.fiscalYears,
   );
   const { selectedMinistry } = useSelector(
-    (state: RootState) => state.selectedMinistry
+    (state: RootState) => state.selectedMinistry,
   );
 
   useEffect(() => {
@@ -142,22 +144,15 @@ export default function DonutChart() {
         setLoading(true);
         setError(null);
 
-        console.log("Fetching article data for:", {
-          year: selectedFiscalYear.anneeFiscale,
-          ministryId: selectedMinistry.id,
-        });
-
         const response = await api.get(
-          `${API_BASE}/Public/depenses/ministere${selectedFiscalYear.anneeFiscale}/${selectedMinistry.id}`
+          `${API_BASE}/depense/ministere/${selectedFiscalYear.anneeFiscale}/${selectedMinistry.id}`,
         );
-
-        console.log("API Response:", response.data);
 
         const articles = response.data[0]?.articles || [];
 
         if (articles.length === 0) {
           setData([]);
-          setError("Aucune donnée disponible pour les articles");
+          setError(t("livepiechart.no_data"));
           return;
         }
 
@@ -174,13 +169,13 @@ export default function DonutChart() {
         setData(formattedData);
       } catch (error: any) {
         if (error.response?.status === 404) {
-          setError("Aucune donnée");
+          setError(t("livepiechart.error_404"));
         } else if (error.response?.status === 500) {
-          setError("Erreur serveur - Veuillez réessayer plus tard");
+          setError(t("livepiechart.error_500"));
         } else if (error.message?.includes("Network Error")) {
-          setError("Erreur de connexion - Vérifiez votre réseau");
+          setError(t("livepiechart.error_network"));
         } else {
-          setError("Erreur lors du chargement des données des articles");
+          setError(t("livepiechart.error_generic"));
         }
 
         setData([]);
@@ -206,7 +201,7 @@ export default function DonutChart() {
   const handlePressArc = (
     index: number,
     centroid: [number, number],
-    d: any
+    d: any,
   ) => {
     const next = selected === index ? null : index;
     setSelected(next);
@@ -246,7 +241,7 @@ export default function DonutChart() {
         <View style={[styles.colorDot, { backgroundColor: item.color }]} />
         <View style={styles.listContent}>
           <Text style={styles.itemLabel}>
-            <Text style={styles.boldText}>Article {item.articleId}</Text> -{" "}
+            <Text style={styles.boldText}>{t("livepiechart.article")} {item.articleId}</Text> -{" "}
             {item.label}
           </Text>
           <Text style={styles.itemValue}>
@@ -271,7 +266,7 @@ export default function DonutChart() {
     <View style={styles.dataRow}>
       <View style={[styles.colorIndicator, { backgroundColor: color }]} />
       <Text style={styles.dataLabel}>{label}</Text>
-      <Text style={styles.dataValue}>{value} HTG</Text>
+      <Text style={styles.dataValue}>{toMillions(value)} Md HTG</Text>
     </View>
   );
 
@@ -280,24 +275,20 @@ export default function DonutChart() {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.loadingText}>
-            Chargement des données des articles...
-          </Text>
+          <Text style={styles.loadingText}>{t("livepiechart.loading")}</Text>
         </View>
       )}
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Erreur de chargement</Text>
+          <Text style={styles.errorTitle}>{t("livepiechart.error_title")}</Text>
           <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
 
       {!loading && !error && data.length === 0 && (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>
-            Aucune donnée d'article disponible pour cette période
-          </Text>
+          <Text style={styles.emptyStateText}>{t("livepiechart.no_data")}</Text>
         </View>
       )}
 
@@ -368,7 +359,7 @@ export default function DonutChart() {
               )}
             </View>
             <View style={styles.dataListContainer}>
-              <Text style={styles.dataListTitle}>Répartition des dépenses</Text>
+              <Text style={styles.dataListTitle}>{t("livepiechart.repartition_title")}</Text>
 
               <View style={styles.listWrapper}>
                 <FlatList
@@ -391,8 +382,8 @@ export default function DonutChart() {
                 >
                   <Text style={styles.showMoreText}>
                     {showAll
-                      ? "Afficher moins"
-                      : `Afficher plus (+${data.length - 3})`}
+                      ? t("common.show_less")
+                      : t("common.show_more", { count: data.length - 3 })}
                   </Text>
                 </AndroidTouchable>
               )}
@@ -409,23 +400,23 @@ export default function DonutChart() {
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>
-                  Article {modalData?.articleId}
+                  {t("livepiechart.article")} {modalData?.articleId}
                 </Text>
                 <Text style={styles.modalSubtitle}>{modalData?.label}</Text>
 
                 <View style={styles.modalDataContainer}>
                   <DataRow
-                    label="Montant Alloué"
+                    label={t("common.montant_alloue")}
                     value={modalData?.totalMontantAlloue || 0}
                     color="#3B82F6"
                   />
                   <DataRow
-                    label="Montant Engagé"
+                    label={t("common.montant_engage")}
                     value={modalData?.totalMontantEngage || 0}
                     color="#F59E0B"
                   />
                   <DataRow
-                    label="Montant Dépensé"
+                    label={t("common.montant_depense")}
                     value={modalData?.totalMontantDepense || 0}
                     color="#10B981"
                   />
@@ -435,7 +426,7 @@ export default function DonutChart() {
                   style={styles.modalCloseButton}
                   onPress={() => setModalVisible(false)}
                 >
-                  <Text style={styles.modalCloseText}>Fermer</Text>
+                  <Text style={styles.modalCloseText}>{t("common.close")}</Text>
                 </AndroidTouchable>
               </View>
             </View>
@@ -525,28 +516,21 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   dataListContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "#F9FAFB",
     borderRadius: 16,
     marginTop: 20,
     padding: 16,
-    ...(Platform.OS === "ios"
-      ? {
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 3,
-        }
-      : {
-          elevation: 4,
-          shadowColor: "#000",
-        }),
     width: "100%",
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
   },
   dataListTitle: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: Platform.OS === "ios" ? "600" : "bold",
-    color: "#111827",
-    marginBottom: 12,
+    color: "#6B7280",
+    marginBottom: 10,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
     includeFontPadding: false,
     textAlignVertical: "center",
   },
@@ -560,15 +544,22 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 12,
     minHeight: Platform.OS === "android" ? 56 : 48,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   colorDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     marginRight: 12,
   },
   listContent: {
@@ -586,31 +577,31 @@ const styles = StyleSheet.create({
     fontWeight: Platform.OS === "ios" ? "700" : "bold",
   },
   itemValue: {
-    color: "#111827",
-    fontSize: 12,
-    fontWeight: Platform.OS === "ios" ? "700" : "bold",
-    marginTop: 2,
+    color: "#6B7280",
+    fontSize: 11,
+    marginTop: 3,
     includeFontPadding: false,
     textAlignVertical: "center",
   },
   separator: {
-    height: 1,
-    backgroundColor: "#E5E7EB",
-    marginVertical: 8,
-    marginHorizontal: 8,
+    height: 8,
   },
   showMoreButton: {
     marginTop: 12,
     padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#DBEAFE",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+    backgroundColor: "#EFF6FF",
     alignItems: "center",
     minHeight: Platform.OS === "android" ? 48 : 44,
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 6,
   },
   showMoreText: {
     textAlign: "center",
-    color: "#1E40AF",
+    color: "#1D4ED8",
     fontWeight: Platform.OS === "ios" ? "600" : "bold",
     fontSize: 12,
     includeFontPadding: false,
@@ -652,7 +643,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#fff",
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     width: "100%",
     maxWidth: 400,
@@ -661,58 +652,65 @@ const styles = StyleSheet.create({
     }),
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: Platform.OS === "ios" ? "700" : "bold",
-    color: "#111827",
+    fontSize: 13,
+    fontWeight: Platform.OS === "ios" ? "600" : "bold",
+    color: "#6B7280",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
     includeFontPadding: false,
     textAlignVertical: "center",
   },
   modalSubtitle: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: 16,
+    fontWeight: Platform.OS === "ios" ? "700" : "bold",
+    color: "#111827",
     textAlign: "center",
     marginBottom: 20,
-    lineHeight: 20,
+    lineHeight: 22,
     includeFontPadding: false,
   },
   modalDataContainer: {
     backgroundColor: "#F9FAFB",
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 14,
+    padding: 4,
     marginVertical: 16,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    overflow: "hidden",
   },
   dataRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: "#F3F4F6",
   },
   colorIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     marginRight: 12,
   },
   dataLabel: {
     flex: 1,
-    fontSize: 14,
-    color: "#374151",
+    fontSize: 13,
+    color: "#6B7280",
     includeFontPadding: false,
     textAlignVertical: "center",
   },
   dataValue: {
     fontSize: 14,
-    fontWeight: Platform.OS === "ios" ? "600" : "bold",
+    fontWeight: Platform.OS === "ios" ? "700" : "bold",
     color: "#111827",
     includeFontPadding: false,
     textAlignVertical: "center",
   },
   modalCloseButton: {
-    marginTop: 8,
-    backgroundColor: "#3B82F6",
+    marginTop: 4,
+    backgroundColor: "#2563EB",
     padding: 14,
     borderRadius: 12,
     alignItems: "center",

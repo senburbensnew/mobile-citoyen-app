@@ -4,9 +4,26 @@
   "Année fiscale": "Année fiscale",
   "main_layout": {
     "app_title": "Portail Gouvernemental",
-    "oops" : "Oups!",
-    "loading" : "Chargement",
-    "retry_text" : "Réessayer"
+    "oops": "Oups!",
+    "loading": "Chargement",
+    "retry_text": "Réessayer"
+  },
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "online": "En ligne",
+    "show_more": "Afficher plus (+{{count}})",
+    "show_less": "Afficher moins",
+    "md_htg": "Md HTG",
+    "m_htg": "M HTG",
+    "montant_alloue": "Montant Alloué",
+    "montant_engage": "Montant Engagé",
+    "montant_depense": "Montant Dépensé",
+    "no_data": "Aucune donnée disponible",
+    "error_server": "Erreur serveur - Veuillez réessayer plus tard",
+    "error_network": "Erreur de connexion - Vérifiez votre réseau",
+    "error_loading": "Erreur lors du chargement des données"
   },
   "root_tabs": {
     "citoyen": "Vue Citoyen",
@@ -16,6 +33,16 @@
     "parametres": "Paramètres"
   },
   "index_screen": {
+    "tabs": {
+      "apercu_budgetaire": "Aperçu Budgétaire",
+      "vue_detaillee": "Vue détaillée",
+      "projets": "Projets"
+    },
+    "dashboard_header": {
+      "dashboard": "Dashboard",
+      "role": "Rôle",
+      "ministere": "Ministère"
+    },
     "budget_section": {
       "Transparence Budgétaire": "Transparence Budgétaire",
       "Transparence Budgétaire texte": "Consultez l'utilisation des fonds publics par ministère pour l'année fiscale",
@@ -23,13 +50,88 @@
       "Dépensé": "Dépensé",
       "Ministères": "Ministères"
     },
-    "filters_section": {},
-    "piechart_section": {},
-    "barchart_section": {},
+    "filters_section": {
+      "title": "Filtres & Analyses",
+      "subtitle": "Filtrez par ministère",
+      "search_placeholder": "Rechercher ministère",
+      "dropdown_placeholder": "Choisissez un ministère"
+    },
+    "piechart_section": {
+      "title": "Répartition budgétaire",
+      "subtitle_default": "Distribution par article"
+    },
+    "barchart_section": {
+      "title": "Évolution mensuelle",
+      "subtitle": "Allocations & dépenses par mois",
+      "allocations": "Allocations",
+      "depenses": "Dépenses",
+      "allocation": "Allocation",
+      "solde": "Solde"
+    },
     "reports_section": {
       "rapports_recents": "Rapports recents",
-      "aucun_rapport_disponible": "aucun_rapport_disponible"
+      "aucun_rapport_disponible": "Aucun rapport disponible"
     }
+  },
+  "livepiechart": {
+    "loading": "Chargement des données...",
+    "error_title": "Erreur de chargement",
+    "no_data": "Aucune donnée disponible pour cette période",
+    "repartition_title": "Répartition des dépenses",
+    "article": "Article",
+    "section": "Section",
+    "error_404": "Aucune donnée",
+    "error_500": "Erreur serveur - Veuillez réessayer plus tard",
+    "error_network": "Erreur de connexion - Vérifiez votre réseau",
+    "error_generic": "Erreur lors du chargement des données"
+  },
+  "profile_screen": {
+    "online": "En ligne",
+    "personal_info": "Informations Personnelles",
+    "full_name": "Nom complet",
+    "email": "Adresse email",
+    "phone": "Téléphone",
+    "department": "Département",
+    "preferences": "Préférences",
+    "email_notifs": "Notifications email",
+    "email_notifs_desc": "Recevoir les notifications par email",
+    "push_notifs": "Notifications push",
+    "push_notifs_desc": "Alertes en temps réel",
+    "quick_actions": "Actions Rapides",
+    "change_password": "Changer le mot de passe",
+    "manage_2fa": "Gestion 2FA",
+    "security_zone": "Zone de sécurité",
+    "session_inactive": "Session sécurisée inactive",
+    "session_desc": "Votre session n'est pas protégée par authentification à deux facteurs",
+    "logout": "Déconnexion",
+    "app_footer": "Portail Gouvernemental de Transparence Budgétaire",
+    "app_version": "République d'Haïti • Version 1.0"
+  },
+  "notifications_screen": {
+    "title": "Notifications",
+    "subtitle": "Actualités gouvernementales",
+    "total": "Total",
+    "unread": "Non lues",
+    "read": "Lues",
+    "filter": "Filtrer",
+    "mark_all_read": "Tout lire",
+    "status": "Statut",
+    "category": "Catégorie",
+    "search": "Rechercher",
+    "search_placeholder": "Rechercher dans les notifications...",
+    "no_notifications": "Aucune notification",
+    "no_notifications_desc": "Vous n'avez aucune notification pour le moment.",
+    "delete_title": "Supprimer la notification",
+    "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette notification ?",
+    "filter_all": "Toutes les notifications",
+    "filter_unread": "Non lues",
+    "filter_urgent": "Urgentes",
+    "category_all": "Toutes les catégories",
+    "category_rapport": "Rapports",
+    "category_directive": "Directives",
+    "category_info": "Informations",
+    "select_filter": "Sélectionner un filtre",
+    "select_category": "Sélectionner une catégorie"
   },
   "parametreScreen": {
     "titre": "Paramètres",

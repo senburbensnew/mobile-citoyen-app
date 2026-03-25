@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   View,
   Text,
@@ -26,19 +27,6 @@ interface Notification {
 }
 
 type FilterType = "all" | "unread" | "urgent";
-
-const filterOptions = [
-  { label: "Toutes les notifications", value: "all" },
-  { label: "Non lues", value: "unread" },
-  { label: "Urgentes", value: "urgent" },
-];
-
-const categoryOptions = [
-  { label: "Toutes les catégories", value: "all" },
-  { label: "Rapports", value: "rapport" },
-  { label: "Directives", value: "directive" },
-  { label: "Informations", value: "info" },
-];
 
 // Utility functions
 const getTypeColor = (priority: string) => {
@@ -77,6 +65,7 @@ const NotificationCard = ({
   onPress: (id: number) => void;
   onDelete: (id: number) => void;
 }) => {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const typeColor = getTypeColor(item.priority);
 
@@ -100,12 +89,12 @@ const NotificationCard = ({
 
   const handleDelete = () => {
     Alert.alert(
-      "Supprimer la notification",
-      "Êtes-vous sûr de vouloir supprimer cette notification ?",
+      t("notifications_screen.delete_title"),
+      t("notifications_screen.delete_confirm"),
       [
-        { text: "Annuler", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Supprimer",
+          text: t("common.delete"),
           style: "destructive",
           onPress: () => onDelete(item.id),
         },
@@ -228,34 +217,52 @@ const NotificationCard = ({
   );
 };
 
-const EmptyState = () => (
-  <View
-    style={{
-      backgroundColor: "white",
-      padding: 24,
-      borderRadius: 8,
-      alignItems: "center",
-      marginVertical: 20,
-      marginHorizontal: 16,
-    }}
-  >
-    <Feather
-      name="bell"
-      size={48}
-      color="#9CA3AF"
-      style={{ marginBottom: 12 }}
-    />
-    <Text style={{ fontSize: 18, marginBottom: 6, fontWeight: "600" }}>
-      Aucune notification
-    </Text>
-    <Text style={{ color: "#6B7280", textAlign: "center", lineHeight: 20 }}>
-      Vous n'avez aucune notification pour le moment.
-    </Text>
-  </View>
-);
+const EmptyState = () => {
+  const { t } = useTranslation();
+  return (
+    <View
+      style={{
+        backgroundColor: "white",
+        padding: 24,
+        borderRadius: 8,
+        alignItems: "center",
+        marginVertical: 20,
+        marginHorizontal: 16,
+      }}
+    >
+      <Feather
+        name="bell"
+        size={48}
+        color="#9CA3AF"
+        style={{ marginBottom: 12 }}
+      />
+      <Text style={{ fontSize: 18, marginBottom: 6, fontWeight: "600" }}>
+        {t("notifications_screen.no_notifications")}
+      </Text>
+      <Text style={{ color: "#6B7280", textAlign: "center", lineHeight: 20 }}>
+        {t("notifications_screen.no_notifications_desc")}
+      </Text>
+    </View>
+  );
+};
 
 // Main Component
 export default function Notifications() {
+  const { t } = useTranslation();
+
+  const filterOptions = [
+    { label: t("notifications_screen.filter_all"), value: "all" },
+    { label: t("notifications_screen.filter_unread"), value: "unread" },
+    { label: t("notifications_screen.filter_urgent"), value: "urgent" },
+  ];
+
+  const categoryOptions = [
+    { label: t("notifications_screen.category_all"), value: "all" },
+    { label: t("notifications_screen.category_rapport"), value: "rapport" },
+    { label: t("notifications_screen.category_directive"), value: "directive" },
+    { label: t("notifications_screen.category_info"), value: "info" },
+  ];
+
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -375,10 +382,10 @@ export default function Notifications() {
       >
         <View>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 4 }}>
-            Notifications
+            {t("notifications_screen.title")}
           </Text>
           <Text style={{ fontSize: 14, color: "#6B7280" }}>
-            Actualités gouvernementales
+            {t("notifications_screen.subtitle")}
           </Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -425,7 +432,7 @@ export default function Notifications() {
             style={{ marginBottom: 4 }}
           />
           <Text style={{ fontSize: 12, color: "#2563EB", fontWeight: "500" }}>
-            Total
+            {t("notifications_screen.total")}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold" }}>
             {notifications.length}
@@ -449,7 +456,7 @@ export default function Notifications() {
             style={{ marginBottom: 4 }}
           />
           <Text style={{ fontSize: 12, color: "#DC2626", fontWeight: "500" }}>
-            Non lues
+            {t("notifications_screen.unread")}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold" }}>
             {unreadCount}
@@ -473,7 +480,7 @@ export default function Notifications() {
             style={{ marginBottom: 4 }}
           />
           <Text style={{ fontSize: 12, color: "#10B981", fontWeight: "500" }}>
-            Lues
+            {t("notifications_screen.read")}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold" }}>
             {notifications.length - unreadCount}
@@ -513,7 +520,7 @@ export default function Notifications() {
             style={{ marginRight: 8 }}
           />
           <Text style={{ fontSize: 16, color: "#374151", fontWeight: "600" }}>
-            Filtrer
+            {t("notifications_screen.filter")}
           </Text>
         </View>
         {unreadCount > 0 && (
@@ -529,7 +536,7 @@ export default function Notifications() {
             }}
           >
             <Text style={{ fontSize: 14, color: "#374151", fontWeight: "500" }}>
-              Tout lire
+              {t("notifications_screen.mark_all_read")}
             </Text>
           </TouchableOpacity>
         )}
@@ -545,7 +552,7 @@ export default function Notifications() {
             fontWeight: "500",
           }}
         >
-          Statut
+          {t("notifications_screen.status")}
         </Text>
         <Dropdown
           style={{
@@ -560,7 +567,7 @@ export default function Notifications() {
           labelField="label"
           valueField="value"
           value={filter}
-          placeholder="Sélectionner un filtre"
+          placeholder={t("notifications_screen.select_filter")}
           onChange={(item) => setFilter(item.value)}
           selectedTextStyle={{ fontSize: 14 }}
           placeholderStyle={{ fontSize: 14, color: "#9CA3AF" }}
@@ -577,7 +584,7 @@ export default function Notifications() {
             fontWeight: "500",
           }}
         >
-          Catégorie
+          {t("notifications_screen.category")}
         </Text>
         <Dropdown
           style={{
@@ -592,7 +599,7 @@ export default function Notifications() {
           labelField="label"
           valueField="value"
           value={categoryFilter}
-          placeholder="Sélectionner une catégorie"
+          placeholder={t("notifications_screen.select_category")}
           onChange={(item) => setCategoryFilter(item.value)}
           selectedTextStyle={{ fontSize: 14 }}
           placeholderStyle={{ fontSize: 14, color: "#9CA3AF" }}
@@ -609,7 +616,7 @@ export default function Notifications() {
             fontWeight: "500",
           }}
         >
-          Rechercher
+          {t("notifications_screen.search")}
         </Text>
         <View
           style={{
@@ -630,7 +637,7 @@ export default function Notifications() {
             style={{ marginRight: 8 }}
           />
           <TextInput
-            placeholder="Rechercher dans les notifications..."
+            placeholder={t("notifications_screen.search_placeholder")}
             placeholderTextColor="#9CA3AF"
             onChangeText={debouncedSearch}
             style={{

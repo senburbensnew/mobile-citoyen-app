@@ -1,31 +1,31 @@
-export type UserRole = 'ADMIN' | 'RH' | 'GRAND_COMMIS' | 'FONCTIONNAIRE';
-export type UserStatus = 'ACTIVE' | 'INACTIVE';
-export type Language = 'fr' | 'ht';
+export type UserRole =
+  | "ADMIN"
+  | "RH"
+  | "GRAND_COMMIS"
+  | "FONCTIONNAIRE"
+  | "LAMBDA";
+export type UserStatus = "ACTIVE" | "INACTIVE";
+export type Language = "fr" | "ht";
 
-export type AuditAction = 
-  | 'CREATE' 
-  | 'UPDATE' 
-  | 'DEACTIVATE' 
-  | 'ACTIVATE' 
-  | 'ASSIGN' 
-  | 'DELETE'
-  | 'RESET_PASSWORD';
+export type AuditAction =
+  | "CREATE"
+  | "UPDATE"
+  | "DEACTIVATE"
+  | "ACTIVATE"
+  | "ASSIGN"
+  | "DELETE"
+  | "RESET_PASSWORD";
 
 export interface User {
-  id: string;
-  fullName: string;
+  id?: string;
   username: string;
   email: string;
-  password: string;
-  role: UserRole;
-  ministere?: string;
-  departement?: string;
-  status: UserStatus;
-  avatar?: string;
-  createdAt: string;
-  createdBy: string;
-  updatedAt?: string;
-  updatedBy?: string;
+  prenom: string;
+  nom: string;
+  sexe: "M" | "F";
+  roles: UserRole[];
+  ministereId?: string;
+  sectionId?: string;
 }
 
 export interface AuditLog {

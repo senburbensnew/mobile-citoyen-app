@@ -1,19 +1,35 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { useLanguage } from '../hooks/useLanguage';
-import { useAuth } from '../hooks/useAuth';
-import { User, UserRole, UserStatus, AuditLog } from '../types';
-import { addUser, updateUser, getUserByUsername, getUserByEmail, addAuditLog, getMinisteres, getDepartements } from '../utils/storage';
-import { validateUsername, validateEmail, validatePassword, generateSecurePassword } from '../utils/validation';
-import { getRolesForUser } from '../utils/permissions';
-import { toast } from 'sonner@2.0.3';
-import { Save, X, RefreshCw, Upload } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { ShareCredentials } from './ShareCredentials';
+import { RefreshCw, Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useAuth } from "../hooks/useAuth";
+import { useLanguage } from "../hooks/useLanguage";
+import { AuditLog, User, UserRole } from "../types";
+import { getRolesForUser } from "../utils/permissions";
+import {
+  addAuditLog,
+  addUser,
+  getUserByEmail,
+  getUserByUsername,
+  updateUser,
+} from "../utils/storage";
+import {
+  generateSecurePassword,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "../utils/validation";
+import { ShareCredentials } from "./ShareCredentials";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface UserFormProps {
   editingUser?: User | null;
@@ -21,23 +37,43 @@ interface UserFormProps {
   onCancel?: () => void;
 }
 
-export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) => {
+export const UserForm = ({
+  editingUser,
+  onSuccess,
+  onCancel,
+}: UserFormProps) => {
   const { t } = useLanguage();
   const { currentUser } = useAuth();
-  
-  const [formData, setFormData] = useState<Partial<User>>({
-    fullName: '',
-    username: '',
-    email: '',
-    password: '',
-    role: 'FONCTIONNAIRE',
-    ministere: '',
-    departement: '',
-    status: 'ACTIVE',
-    avatar: '',
+
+  const [formData, setFormData] = useState<{
+    prenom: string;
+    nom: string;
+    username: string;
+    email: string;
+    sexe: "M" | "F";
+    nif: string;
+    ninu: string;
+    phoneNumber: string;
+    role: UserRole;
+    ministerId: string;
+    sectionId: string;
+    password: string;
+  }>({
+    prenom: "",
+    nom: "",
+    username: "",
+    email: "",
+    sexe: "M",
+    nif: "",
+    ninu: "",
+    phoneNumber: "",
+    role: "FONCTIONNAIRE",
+    ministerId: "",
+    sectionId: "",
+    password: "",
   });
-  
-  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [shareCredentials, setShareCredentials] = useState<{
@@ -50,75 +86,94 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
   useEffect(() => {
     if (editingUser) {
       setFormData({
-        fullName: editingUser.fullName,
+        prenom: editingUser.prenom,
+        nom: editingUser.nom,
         username: editingUser.username,
         email: editingUser.email,
-        password: '', // Don't pre-fill password
+        sexe: editingUser.sexe,
+        nif: editingUser.nif,
+        ninu: editingUser.ninu,
+        phoneNumber: editingUser.phoneNumber,
         role: editingUser.role,
-        ministere: editingUser.ministere || '',
-        departement: editingUser.departement || '',
-        status: editingUser.status,
-        avatar: editingUser.avatar || '',
+        ministerId: editingUser.ministerId || "",
+        sectionId: editingUser.sectionId || "",
+        password: "",
       });
     }
   }, [editingUser]);
 
-  const availableRoles = getRolesForUser(currentUser?.role || 'LAMBDA');
+  const availableRoles = getRolesForUser(currentUser?.role || "LAMBDA");
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.fullName?.trim()) {
-      newErrors.fullName = 'Nom complet requis';
+    if (!formData.prenom?.trim()) {
+      newErrors.prenom = "Prénom requis";
+    }
+
+    if (!formData.nom?.trim()) {
+      newErrors.nom = "Nom requis";
+    }
+
+    if (!formData.nif?.trim()) {
+      newErrors.nif = "NIF requis";
+    }
+
+    if (!formData.ninu?.trim()) {
+      newErrors.ninu = "NINU requis";
+    }
+
+    if (!formData.phoneNumber?.trim()) {
+      newErrors.phoneNumber = "Téléphone requis";
     }
 
     if (!formData.username?.trim()) {
-      newErrors.username = 'Nom d\'utilisateur requis';
+      newErrors.username = "Nom d'utilisateur requis";
     } else if (!validateUsername(formData.username)) {
-      newErrors.username = t('invalidUsername');
+      newErrors.username = t("invalidUsername");
     } else if (!editingUser) {
       // Check uniqueness only for new users
       const existingUser = getUserByUsername(formData.username);
       if (existingUser) {
-        newErrors.username = t('usernameTaken');
+        newErrors.username = t("usernameTaken");
       }
     }
 
     if (!formData.email?.trim()) {
-      newErrors.email = 'Email requis';
+      newErrors.email = "Email requis";
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = t('invalidEmail');
+      newErrors.email = t("invalidEmail");
     } else if (!editingUser || formData.email !== editingUser.email) {
       const existingEmail = getUserByEmail(formData.email);
       if (existingEmail) {
-        newErrors.email = t('emailTaken');
+        newErrors.email = t("emailTaken");
       }
     }
 
     if (!editingUser) {
       // Password required for new users
       if (!formData.password) {
-        newErrors.password = 'Mot de passe requis';
+        newErrors.password = "Mot de passe requis";
       } else if (!validatePassword(formData.password)) {
-        newErrors.password = t('invalidPassword');
+        newErrors.password = t("invalidPassword");
       } else if (formData.password !== confirmPassword) {
-        newErrors.confirmPassword = t('passwordMismatch');
+        newErrors.confirmPassword = t("passwordMismatch");
       }
     } else if (formData.password) {
       // If updating password
       if (!validatePassword(formData.password)) {
-        newErrors.password = t('invalidPassword');
+        newErrors.password = t("invalidPassword");
       } else if (formData.password !== confirmPassword) {
-        newErrors.confirmPassword = t('passwordMismatch');
+        newErrors.confirmPassword = t("passwordMismatch");
       }
     }
 
-    if (formData.role === 'GRAND_COMMIS' && !formData.ministere) {
-      newErrors.ministere = t('ministereRequired');
+    if (!formData.ministerId) {
+      newErrors.ministerId = "Minister ID requis";
     }
 
-    if (formData.role === 'RH' && !formData.ministere) {
-      newErrors.ministere = 'Le ministère est obligatoire pour un RH';
+    if (!formData.sectionId) {
+      newErrors.sectionId = "Section ID requis";
     }
 
     setErrors(newErrors);
@@ -127,25 +182,28 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm() || !currentUser) return;
 
     setIsLoading(true);
 
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     try {
       if (editingUser) {
         // Update existing user
         const updates: Partial<User> = {
-          fullName: formData.fullName,
+          prenom: formData.prenom,
+          nom: formData.nom,
           email: formData.email,
+          sexe: formData.sexe as "M" | "F",
+          nif: formData.nif,
+          ninu: formData.ninu,
+          phoneNumber: formData.phoneNumber,
           role: formData.role,
-          ministere: formData.ministere,
-          departement: formData.departement,
-          status: formData.status,
-          avatar: formData.avatar,
+          ministerId: formData.ministerId,
+          sectionId: formData.sectionId,
           updatedBy: currentUser.username,
         };
 
@@ -154,14 +212,24 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
         }
 
         const oldData = { ...editingUser };
+
+        if (!editingUser.id) {
+          throw new Error("User ID is missing");
+        }
         const updatedUser = updateUser(editingUser.id, updates);
 
         if (updatedUser) {
           // Create audit log
           const changes: Record<string, { old: any; new: any }> = {};
-          
-          if (oldData.fullName !== updatedUser.fullName) {
-            changes.fullName = { old: oldData.fullName, new: updatedUser.fullName };
+
+          if (
+            oldData.prenom !== updatedUser.prenom ||
+            oldData.nom !== updatedUser.nom
+          ) {
+            changes.fullName = {
+              old: `${oldData.prenom} ${oldData.nom}`,
+              new: `${updatedUser.prenom} ${updatedUser.nom}`,
+            };
           }
           if (oldData.email !== updatedUser.email) {
             changes.email = { old: oldData.email, new: updatedUser.email };
@@ -169,96 +237,115 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
           if (oldData.role !== updatedUser.role) {
             changes.role = { old: oldData.role, new: updatedUser.role };
           }
-          if (oldData.status !== updatedUser.status) {
-            changes.status = { old: oldData.status, new: updatedUser.status };
+          if (oldData.ministerId !== updatedUser.ministerId) {
+            changes.ministerId = {
+              old: oldData.ministerId,
+              new: updatedUser.ministerId,
+            };
           }
-          if (oldData.ministere !== updatedUser.ministere) {
-            changes.ministere = { old: oldData.ministere, new: updatedUser.ministere };
+
+          if (oldData.sectionId !== updatedUser.sectionId) {
+            changes.sectionId = {
+              old: oldData.sectionId,
+              new: updatedUser.sectionId,
+            };
           }
-          if (oldData.departement !== updatedUser.departement) {
-            changes.departement = { old: oldData.departement, new: updatedUser.departement };
+
+          if (!updatedUser.id) {
+            throw new Error("User ID is missing");
           }
 
           const auditLog: AuditLog = {
             id: `audit-${Date.now()}`,
             timestamp: new Date().toISOString(),
-            action: formData.password ? 'RESET_PASSWORD' : 'UPDATE',
+            action: formData.password ? "RESET_PASSWORD" : "UPDATE",
             performedBy: currentUser.username,
             performedByRole: currentUser.role,
-            targetUser: updatedUser.fullName,
+            targetUser: updatedUser.prenom + " " + updatedUser.nom,
             targetUserId: updatedUser.id,
             details: `Modification des informations de l'utilisateur`,
             changes: Object.keys(changes).length > 0 ? changes : undefined,
-            ipAddress: '192.168.1.1',
+            ipAddress: "192.168.1.1",
           };
 
           addAuditLog(auditLog);
-          toast.success(t('userUpdated'));
+          toast.success(t("userUpdated"));
           onSuccess?.();
         }
       } else {
         // Create new user
         const newUser: User = {
           id: `user-${Date.now()}`,
-          fullName: formData.fullName!,
-          username: formData.username!,
-          email: formData.email!,
-          password: formData.password!,
-          role: formData.role as UserRole,
-          // Auto-assign ministere si RH crée un fonctionnaire
-          ministere: formData.role === 'FONCTIONNAIRE' && currentUser.role === 'RH' 
-            ? currentUser.ministere 
-            : formData.ministere,
-          departement: formData.departement,
-          status: formData.status as UserStatus,
-          avatar: formData.avatar,
+          prenom: formData.prenom,
+          nom: formData.nom,
+          username: formData.username,
+          email: formData.email,
+          sexe: formData.sexe as "M" | "F",
+          nif: formData.nif,
+          ninu: formData.ninu,
+          phoneNumber: formData.phoneNumber,
+          role: formData.role,
+          ministerId: formData.ministerId,
+          sectionId: formData.sectionId,
+          password: formData.password,
           createdAt: new Date().toISOString(),
           createdBy: currentUser.username,
         };
 
         addUser(newUser);
 
+        if (!newUser.id) {
+          throw new Error("User ID is missing");
+        }
+
         // Create audit log
         const auditLog: AuditLog = {
           id: `audit-${Date.now()}`,
           timestamp: new Date().toISOString(),
-          action: 'CREATE',
+          action: "CREATE",
           performedBy: currentUser.username,
           performedByRole: currentUser.role,
-          targetUser: newUser.fullName,
+          targetUser: newUser.prenom + " " + newUser.nom,
           targetUserId: newUser.id,
           details: `Création d'un nouveau ${t(newUser.role)}`,
-          ipAddress: '192.168.1.1',
+          ipAddress: "192.168.1.1",
         };
 
         addAuditLog(auditLog);
-        toast.success(t('userCreated'));
-        
+        toast.success(t("userCreated"));
+
         // Reset form
         setFormData({
-          fullName: '',
-          username: '',
-          email: '',
-          password: '',
-          role: 'FONCTIONNAIRE',
-          ministere: '',
-          departement: '',
-          status: 'ACTIVE',
-          avatar: '',
+          prenom: "",
+          nom: "",
+          username: "",
+          email: "",
+          sexe: "M",
+          nif: "",
+          ninu: "",
+          phoneNumber: "",
+          role: "FONCTIONNAIRE",
+          ministerId: "",
+          sectionId: "",
+          password: "",
         });
-        setConfirmPassword('');
+        setConfirmPassword("");
         onSuccess?.();
+
+        if (!newUser.password) {
+          throw new Error("Password is missing");
+        }
 
         // Share credentials
         setShareCredentials({
           username: newUser.username,
           password: newUser.password,
-          fullName: newUser.fullName,
+          fullName: newUser.prenom + " " + newUser.nom,
           email: newUser.email,
         });
       }
     } catch (error) {
-      toast.error('Une erreur est survenue');
+      toast.error("Une erreur est survenue");
     } finally {
       setIsLoading(false);
     }
@@ -268,45 +355,64 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
     const password = generateSecurePassword();
     setFormData({ ...formData, password });
     setConfirmPassword(password);
-    toast.success('Mot de passe généré avec succès');
+    toast.success("Mot de passe généré avec succès");
   };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          {editingUser ? `${t('edit')} ${t('users')}` : t('createUser')}
+          {editingUser ? `${t("edit")} ${t("users")}` : t("createUser")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            {/* Full Name */}
+            {/* FirstName */}
             <div className="space-y-2">
-              <Label htmlFor="fullName">
-                {t('fullName')} <span className="text-red-500">*</span>
+              <Label htmlFor="prenom">
+                {t("firstName")} <span className="text-red-500">*</span>
               </Label>
               <Input
-                id="fullName"
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                placeholder="Ex: Jean Pierre Dupont"
-                disabled={isLoading}
+                id="prenom"
+                value={formData.prenom}
+                onChange={(e) =>
+                  setFormData({ ...formData, prenom: e.target.value })
+                }
               />
-              {errors.fullName && (
-                <p className="text-sm text-red-500">{errors.fullName}</p>
+              {errors.prenom && (
+                <p className="text-sm text-red-500">{errors.prenom}</p>
+              )}
+            </div>
+
+            {/* LastName */}
+            <div className="space-y-2">
+              <Label htmlFor="nom">
+                {t("lastName")} <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="nom"
+                value={formData.nom}
+                onChange={(e) =>
+                  setFormData({ ...formData, nom: e.target.value })
+                }
+              />
+              {errors.nom && (
+                <p className="text-sm text-red-500">{errors.nom}</p>
               )}
             </div>
 
             {/* Username */}
             <div className="space-y-2">
               <Label htmlFor="username">
-                {t('username')} <span className="text-red-500">*</span>
+                {t("username")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="username"
                 value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, username: e.target.value })
+                }
                 placeholder="Ex: jdupont"
                 disabled={isLoading || !!editingUser}
               />
@@ -318,13 +424,15 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
             {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">
-                {t('email')} <span className="text-red-500">*</span>
+                {t("email")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 placeholder="Ex: jean.dupont@gov.ht"
                 disabled={isLoading}
               />
@@ -336,11 +444,13 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
             {/* Role */}
             <div className="space-y-2">
               <Label htmlFor="role">
-                {t('userType')} <span className="text-red-500">*</span>
+                {t("userType")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+                onValueChange={(value: UserRole) =>
+                  setFormData({ ...formData, role: value as UserRole })
+                }
                 disabled={isLoading}
               >
                 <SelectTrigger>
@@ -356,18 +466,48 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
               </Select>
             </div>
 
+            {/* Sex */}
+            <div className="space-y-2">
+              <Label htmlFor="sexe">
+                {t("select_sex")} <span className="text-red-500">*</span>
+              </Label>
+
+              <Select
+                value={formData.sexe}
+                onValueChange={(value: "M" | "F") =>
+                  setFormData({ ...formData, sexe: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t("select_sex")} />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="M">{t("male")}</SelectItem>
+                  <SelectItem value="F">{t("female")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">
-                {t('password')} {!editingUser && <span className="text-red-500">*</span>}
+                {t("password")}{" "}
+                {!editingUser && <span className="text-red-500">*</span>}
               </Label>
               <div className="flex gap-2">
                 <Input
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder={editingUser ? 'Laisser vide pour ne pas modifier' : '********'}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder={
+                    editingUser
+                      ? "Laisser vide pour ne pas modifier"
+                      : "********"
+                  }
                   disabled={isLoading}
                   className="flex-1"
                 />
@@ -377,7 +517,7 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
                   size="icon"
                   onClick={handleGeneratePassword}
                   disabled={isLoading}
-                  title={t('generatePassword')}
+                  title={t("generatePassword")}
                 >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
@@ -390,7 +530,8 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
             {/* Confirm Password */}
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                {t('confirmPassword')} {!editingUser && <span className="text-red-500">*</span>}
+                {t("confirmPassword")}{" "}
+                {!editingUser && <span className="text-red-500">*</span>}
               </Label>
               <Input
                 id="confirmPassword"
@@ -405,91 +546,91 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
               )}
             </div>
 
-            {/* Ministere */}
-            {(formData.role === 'GRAND_COMMIS' || formData.role === 'RH') && (
-              <div className="space-y-2">
-                <Label htmlFor="ministere">
-                  {t('ministere')} <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={formData.ministere}
-                  onValueChange={(value) => setFormData({ ...formData, ministere: value })}
-                  disabled={isLoading}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un ministère" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getMinisteres().map((min) => (
-                      <SelectItem key={min} value={min}>
-                        {min}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.ministere && (
-                  <p className="text-sm text-red-500">{errors.ministere}</p>
-                )}
-              </div>
-            )}
-
-            {/* Ministere auto-assigné pour Fonctionnaire si créé par RH */}
-            {formData.role === 'FONCTIONNAIRE' && currentUser?.role === 'RH' && currentUser.ministere && (
-              <div className="space-y-2">
-                <Label htmlFor="ministere-readonly">
-                  {t('ministere')}
-                </Label>
-                <Input
-                  id="ministere-readonly"
-                  value={currentUser.ministere}
-                  disabled
-                  className="bg-muted"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Le fonctionnaire sera assigné à votre ministère: {currentUser.ministere}
-                </p>
-              </div>
-            )}
-
-            {/* Departement */}
             <div className="space-y-2">
-              <Label htmlFor="departement">
-                {t('departement')} ({t('optional')})
+              <Label htmlFor="nif">
+                NIF <span className="text-red-500">*</span>
               </Label>
-              <Select
-                value={formData.departement}
-                onValueChange={(value) => setFormData({ ...formData, departement: value })}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un département" />
-                </SelectTrigger>
-                <SelectContent>
-                  {getDepartements().map((dep) => (
-                    <SelectItem key={dep} value={dep}>
-                      {dep}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+              <Input
+                id="nif"
+                value={formData.nif}
+                onChange={(e) =>
+                  setFormData({ ...formData, nif: e.target.value })
+                }
+                placeholder="001-234-567-8"
+              />
+
+              {errors.nif && (
+                <p className="text-sm text-red-500">{errors.nif}</p>
+              )}
             </div>
 
-            {/* Status */}
             <div className="space-y-2">
-              <Label htmlFor="status">{t('status')}</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value as UserStatus })}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ACTIVE">{t('ACTIVE')}</SelectItem>
-                  <SelectItem value="INACTIVE">{t('INACTIVE')}</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="ninu">
+                NINU <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="ninu"
+                value={formData.ninu}
+                onChange={(e) =>
+                  setFormData({ ...formData, ninu: e.target.value })
+                }
+                placeholder="10 chiffres"
+              />
+              {errors.ninu && (
+                <p className="text-sm text-red-500">{errors.ninu}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">
+                Téléphone <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, phoneNumber: e.target.value })
+                }
+                placeholder="34567890"
+              />
+              {errors.phoneNumber && (
+                <p className="text-sm text-red-500">{errors.phoneNumber}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="ministerId">
+                Ministère <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="ministerId"
+                value={formData.ministerId}
+                onChange={(e) =>
+                  setFormData({ ...formData, ministerId: e.target.value })
+                }
+                placeholder="4 chiffres"
+              />
+              {errors.ministerId && (
+                <p className="text-sm text-red-500">{errors.ministerId}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sectionId">
+                Section <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="sectionId"
+                value={formData.sectionId}
+                onChange={(e) =>
+                  setFormData({ ...formData, sectionId: e.target.value })
+                }
+                placeholder="7 chiffres"
+              />
+              {errors.sectionId && (
+                <p className="text-sm text-red-500">{errors.sectionId}</p>
+              )}
             </div>
           </div>
 
@@ -503,12 +644,16 @@ export const UserForm = ({ editingUser, onSuccess, onCancel }: UserFormProps) =>
                 disabled={isLoading}
               >
                 <X className="h-4 w-4 mr-2" />
-                {t('cancel')}
+                {t("cancel")}
               </Button>
             )}
             <Button type="submit" disabled={isLoading}>
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? t('loading') : editingUser ? t('update') : t('create')}
+              {isLoading
+                ? t("loading")
+                : editingUser
+                  ? t("update")
+                  : t("create")}
             </Button>
           </div>
         </form>

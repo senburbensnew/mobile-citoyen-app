@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import { AuthProvider, useAuth } from './hooks/useAuth';
-import { LanguageProvider, useLanguage } from './hooks/useLanguage';
-import { Login } from './components/Login';
-import { Dashboard } from './components/Dashboard';
-import { UserForm } from './components/UserForm';
-import { UsersList } from './components/UsersList';
-import { AuditTrail } from './components/AuditTrail';
-import { SystemSettings } from './components/SystemSettings';
-import { Button } from './components/ui/button';
-import { Toaster } from './components/ui/sonner';
-import { 
-  LayoutDashboard, 
-  Users, 
-  UserPlus, 
-  ClipboardList, 
-  LogOut, 
-  Menu,
-  X,
+import {
+  ClipboardList,
   Globe,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Settings,
   Shield,
-  Settings
-} from 'lucide-react';
-import { Badge } from './components/ui/badge';
+  UserPlus,
+  Users,
+  X,
+} from "lucide-react";
+import { useState } from "react";
+import { AuditTrail } from "./components/AuditTrail";
+import { Dashboard } from "./components/Dashboard";
+import { Login } from "./components/Login";
+import { SystemSettings } from "./components/SystemSettings";
+import { Badge } from "./components/ui/badge";
+import { Button } from "./components/ui/button";
+import { Toaster } from "./components/ui/sonner";
+import { UserForm } from "./components/UserForm";
+import { UsersList } from "./components/UsersList";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { LanguageProvider, useLanguage } from "./hooks/useLanguage";
 
-type Page = 'dashboard' | 'users' | 'create-user' | 'audit-trail' | 'settings';
+type Page = "dashboard" | "users" | "create-user" | "audit-trail" | "settings";
 
 const AppContent = () => {
   const { currentUser, isAuthenticated, logout } = useAuth();
   const { t, language, setLanguage } = useLanguage();
-  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const [currentPage, setCurrentPage] = useState<Page>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (!isAuthenticated || !currentUser) {
@@ -36,58 +36,58 @@ const AppContent = () => {
   }
 
   const menuItems = [
-    { 
-      id: 'dashboard' as Page, 
-      label: t('dashboard'), 
+    {
+      id: "dashboard" as Page,
+      label: t("dashboard"),
       icon: LayoutDashboard,
       show: true,
     },
-    { 
-      id: 'users' as Page, 
-      label: t('users'), 
+    {
+      id: "users" as Page,
+      label: t("users"),
       icon: Users,
       show: true,
     },
-    { 
-      id: 'create-user' as Page, 
-      label: t('createUser'), 
+    {
+      id: "create-user" as Page,
+      label: t("createUser"),
       icon: UserPlus,
-      show: currentUser.role === 'ADMIN' || currentUser.role === 'RH',
+      show: currentUser.role === "ADMIN" || currentUser.role === "RH",
     },
-    { 
-      id: 'audit-trail' as Page, 
-      label: t('auditTrail'), 
+    {
+      id: "audit-trail" as Page,
+      label: t("auditTrail"),
       icon: ClipboardList,
-      show: currentUser.role === 'ADMIN',
+      show: currentUser.role === "ADMIN",
     },
-    { 
-      id: 'settings' as Page, 
-      label: t('settings'), 
+    {
+      id: "settings" as Page,
+      label: t("settings"),
       icon: Settings,
-      show: currentUser.role === 'ADMIN',
+      show: currentUser.role === "ADMIN",
     },
   ];
 
   const toggleLanguage = () => {
-    setLanguage(language === 'fr' ? 'ht' : 'fr');
+    setLanguage(language === "fr" ? "ht" : "fr");
   };
 
   const handleLogout = () => {
     logout();
-    setCurrentPage('dashboard');
+    setCurrentPage("dashboard");
   };
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'dashboard':
+      case "dashboard":
         return <Dashboard />;
-      case 'users':
+      case "users":
         return <UsersList />;
-      case 'create-user':
-        return <UserForm onSuccess={() => setCurrentPage('users')} />;
-      case 'audit-trail':
+      case "create-user":
+        return <UserForm onSuccess={() => setCurrentPage("users")} />;
+      case "audit-trail":
         return <AuditTrail />;
-      case 'settings':
+      case "settings":
         return <SystemSettings />;
       default:
         return <Dashboard />;
@@ -96,12 +96,12 @@ const AppContent = () => {
 
   const getRoleBadgeColor = (role: string) => {
     const colors: Record<string, string> = {
-      ADMIN: 'bg-red-100 text-red-800 border-red-300',
-      RH: 'bg-blue-100 text-blue-800 border-blue-300',
-      GRAND_COMMIS: 'bg-purple-100 text-purple-800 border-purple-300',
-      FONCTIONNAIRE: 'bg-green-100 text-green-800 border-green-300',
+      ADMIN: "bg-red-100 text-red-800 border-red-300",
+      RH: "bg-blue-100 text-blue-800 border-blue-300",
+      GRAND_COMMIS: "bg-purple-100 text-purple-800 border-purple-300",
+      FONCTIONNAIRE: "bg-green-100 text-green-800 border-green-300",
     };
-    return colors[role] || 'bg-gray-100 text-gray-800';
+    return colors[role] || "bg-gray-100 text-gray-800";
   };
 
   return (
@@ -123,7 +123,7 @@ const AppContent = () => {
               <h1 className="text-xl">Dashboard Admin</h1>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -134,16 +134,23 @@ const AppContent = () => {
               <Globe className="h-4 w-4" />
               {language.toUpperCase()}
             </Button>
-            
+
             <div className="hidden sm:flex items-center gap-2 border-l pl-3">
               <div className="text-right">
-                <p className="text-sm font-medium">{currentUser.fullName}</p>
-                <Badge className={getRoleBadgeColor(currentUser.role)}>
-                  {t(currentUser.role)}
-                </Badge>
+                <p className="text-sm font-medium">
+                  {currentUser.prenom + " " + currentUser.nom}
+                </p>
+
+                <div className="flex gap-1 justify-end mt-1">
+                  {currentUser.roles.map((role) => (
+                    <Badge key={role} className={getRoleBadgeColor(role)}>
+                      {t(role)}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </div>
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -151,7 +158,7 @@ const AppContent = () => {
               className="gap-2"
             >
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('logout')}</span>
+              <span className="hidden sm:inline">{t("logout")}</span>
             </Button>
           </div>
         </div>
@@ -159,7 +166,9 @@ const AppContent = () => {
         {/* Mobile user info */}
         <div className="sm:hidden border-t px-4 py-2 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium">{currentUser.fullName}</p>
+            <p className="text-sm font-medium">
+              {currentUser.prenom + " " + currentUser.nom}
+            </p>
             <Badge className={getRoleBadgeColor(currentUser.role)}>
               {t(currentUser.role)}
             </Badge>
@@ -174,29 +183,31 @@ const AppContent = () => {
             fixed lg:sticky top-[73px] lg:top-[73px] left-0 z-30
             w-64 h-[calc(100vh-73px)] bg-white border-r
             transform transition-transform duration-200 ease-in-out
-            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           `}
         >
           <nav className="p-4 space-y-2">
-            {menuItems.filter(item => item.show).map((item) => {
-              const Icon = item.icon;
-              const isActive = currentPage === item.id;
-              
-              return (
-                <Button
-                  key={item.id}
-                  variant={isActive ? 'default' : 'ghost'}
-                  className="w-full justify-start gap-3"
-                  onClick={() => {
-                    setCurrentPage(item.id);
-                    setIsSidebarOpen(false);
-                  }}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              );
-            })}
+            {menuItems
+              .filter((item) => item.show)
+              .map((item) => {
+                const Icon = item.icon;
+                const isActive = currentPage === item.id;
+
+                return (
+                  <Button
+                    key={item.id}
+                    variant={isActive ? "default" : "ghost"}
+                    className="w-full justify-start gap-3"
+                    onClick={() => {
+                      setCurrentPage(item.id);
+                      setIsSidebarOpen(false);
+                    }}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Button>
+                );
+              })}
           </nav>
         </aside>
 
@@ -210,9 +221,7 @@ const AppContent = () => {
 
         {/* Main Content */}
         <main className="flex-1 p-4 lg:p-8">
-          <div className="max-w-7xl mx-auto">
-            {renderPage()}
-          </div>
+          <div className="max-w-7xl mx-auto">{renderPage()}</div>
         </main>
       </div>
 

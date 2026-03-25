@@ -1,8 +1,6 @@
 import axios from "axios";
 import { getToken } from "../lib/storage";
 
-// export const API_BASE = "http://192.168.1.159:5030/api";
-// export const API_BASE = "http://ec2-18-223-112-175.us-east-2.compute.amazonaws.com:8080/api";
 export const API_BASE = "http://budget.gouv.ht:5000/api";
 
 const api = axios.create({
@@ -12,6 +10,7 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  validateStatus: (status) => status >= 200 && status < 300,
 });
 
 api.interceptors.request.use(async (config) => {

@@ -1,10 +1,10 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import api from "../lib/api";
 
 export function useApi<T = any>(initialEndpoint: string | null) {
   const [endpoint, setEndpoint] = useState<string | null>(initialEndpoint);
   const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(
@@ -19,16 +19,17 @@ export function useApi<T = any>(initialEndpoint: string | null) {
         const response = await api.get(finalEndpoint);
         setData(response.data);
       } catch (err: any) {
+
         if (err.response?.status === 404) {
-          setError("Ressource introuvable (404)");
+          setError(new Error("Ressource introuvable (404)"));
         } else {
-          setError(err.message ?? "Une erreur est survenue");
+          setError(new Error(err.message ?? "Une erreur est survenue"));
         }
       } finally {
         setLoading(false);
       }
     },
-    [endpoint]
+    [endpoint],
   );
 
   return { data, error, loading, fetchData, setEndpoint };

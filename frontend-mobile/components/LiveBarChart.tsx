@@ -1,10 +1,11 @@
+import api, { API_BASE } from "@/lib/api";
+import { toMillions } from "@/services/helpers";
+import { RootState } from "@/store";
 import { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { useTranslation } from "react-i18next";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 import { useSelector } from "react-redux";
-import api, { API_BASE } from "@/lib/api";
-import { RootState } from "@/store";
-import { toMillions } from "@/services/helpers";
 
 interface MonthlyData {
   moisNom: string;
@@ -34,6 +35,7 @@ export default function LiveBarChart({
   allocationsBarColor = "#10b981",
   depensesBarColor = "#ef4444",
 }: LiveBarChartProps) {
+  const { t } = useTranslation();
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([
     { moisNom: "Oct", montantAlloue: 0, montantDepense: 0 },
     { moisNom: "Nov", montantAlloue: 0, montantDepense: 0 },
@@ -52,7 +54,7 @@ export default function LiveBarChart({
   const [loading, setLoading] = useState(false);
 
   const { selectedFiscalYear } = useSelector(
-    (state: RootState) => state.fiscalYears
+    (state: RootState) => state.fiscalYears,
   );
 
   // ✅ Memoized chart data
@@ -98,19 +100,18 @@ export default function LiveBarChart({
         if (data && data.length > 0) {
           const firstNonEmpty =
             data.find(
-              (m: MonthlyData) => m.montantAlloue > 0 || m.montantDepense > 0
+              (m: MonthlyData) => m.montantAlloue > 0 || m.montantDepense > 0,
             ) || data[0];
           setSelectedMonth(firstNonEmpty);
         }
       } catch (error) {
-        console.log("Error fetching chart data:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (selectedFiscalYear) {
-      const apiUrl = `${API_BASE}/Public/depenses/periode/allocation/${selectedFiscalYear.anneeFiscale}`;
+      const apiUrl = `${API_BASE}/depense/periode/allocation/${selectedFiscalYear.anneeFiscale}`;
       fetchBarChartData(apiUrl);
     }
   }, [selectedFiscalYear]);
@@ -142,7 +143,10 @@ export default function LiveBarChart({
       )}
 
       {/* Chart container */}
-      <View className="p-4 bg-gray-50 rounded-xl mb-5 h-80 justify-center items-center">
+      <View
+        className="p-4 rounded-xl mb-3 h-80 justify-center items-center"
+        style={{ backgroundColor: "#FAFAFA", borderWidth: 1, borderColor: "#F3F4F6" }}
+      >
         {loading ? (
           <ActivityIndicator size={"large"} color={"#004AAD"} />
         ) : (
@@ -181,41 +185,58 @@ export default function LiveBarChart({
 
       {/* Selected Month Info */}
       {selectedMonth && (
-        <View className="mt-1 p-2 bg-gray-50 rounded-lg border border-gray-200">
-          <Text className="text-lg font-bold text-center text-gray-800 mb-2">
-            {selectedMonth.moisNom}
-          </Text>
-
-          <View className="flex-row justify-between">
-            <View className="items-center">
-              <Text className="text-sm text-gray-600">Allocation</Text>
-              <Text className="text-xs font-semibold text-blue-600">
-                {toMillions(selectedMonth.montantAlloue)} Md HTG
+        <View style={styles.monthCard}>
+          <View style={styles.monthCardHeader}>
+            <View style={styles.monthDot} />
+            <Text style={styles.monthName}>{selectedMonth.moisNom}</Text>
+          </View>
+          <View style={styles.metricsRow}>
+            <View style={[styles.metricCard, { borderLeftColor: "#10b981" }]}>
+              <Text style={styles.metricLabel}>{t("index_screen.barchart_section.allocation")}</Text>
+              <Text style={[styles.metricValue, { color: "#059669" }]}>
+                {toMillions(selectedMonth.montantAlloue)}
               </Text>
+              <Text style={styles.metricUnit}>Md HTG</Text>
             </View>
-
-            <View className="items-center">
-              <Text className="text-sm text-gray-600">Dépenses</Text>
-              <Text className="text-xs font-semibold text-red-500">
-                {toMillions(selectedMonth.montantDepense)} Md HTG
+            <View style={[styles.metricCard, { borderLeftColor: "#ef4444" }]}>
+              <Text style={styles.metricLabel}>{t("index_screen.barchart_section.depenses")}</Text>
+              <Text style={[styles.metricValue, { color: "#ef4444" }]}>
+                {toMillions(selectedMonth.montantDepense)}
               </Text>
+              <Text style={styles.metricUnit}>Md HTG</Text>
             </View>
-
-            <View className="items-center">
-              <Text className="text-sm text-gray-600">Solde</Text>
+            <View
+              style={[
+                styles.metricCard,
+                {
+                  borderLeftColor:
+                    selectedMonth.montantAlloue -
+                      selectedMonth.montantDepense >=
+                    0
+                      ? "#10b981"
+                      : "#ef4444",
+                },
+              ]}
+            >
+              <Text style={styles.metricLabel}>{t("index_screen.barchart_section.solde")}</Text>
               <Text
-                className={`text-xs font-semibold ${
-                  selectedMonth.montantAlloue - selectedMonth.montantDepense >=
-                  0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+                style={[
+                  styles.metricValue,
+                  {
+                    color:
+                      selectedMonth.montantAlloue -
+                        selectedMonth.montantDepense >=
+                      0
+                        ? "#059669"
+                        : "#ef4444",
+                  },
+                ]}
               >
                 {toMillions(
-                  selectedMonth.montantAlloue - selectedMonth.montantDepense
-                )}{" "}
-                Md HTG
+                  selectedMonth.montantAlloue - selectedMonth.montantDepense,
+                )}
               </Text>
+              <Text style={styles.metricUnit}>Md HTG</Text>
             </View>
           </View>
         </View>
@@ -254,5 +275,60 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
     fontWeight: "500",
+  },
+  monthCard: {
+    marginTop: 8,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  monthCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  monthDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#9CA3AF",
+    marginRight: 8,
+  },
+  monthName: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  metricsRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  metricCard: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    borderLeftWidth: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  metricLabel: {
+    fontSize: 10,
+    color: "#9CA3AF",
+    marginBottom: 4,
+  },
+  metricValue: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  metricUnit: {
+    fontSize: 9,
+    color: "#9CA3AF",
+    marginTop: 2,
   },
 });

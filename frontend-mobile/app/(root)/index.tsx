@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 import Svg, { Line, Path } from "react-native-svg";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -21,6 +22,7 @@ import VueDetaillee from "@/components/VueDetaillee";
 import { useIsFocused } from "@react-navigation/native";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const isFocused = useIsFocused();
   const { user, role, ministereId, ministereDesignation } = useAuth();
   const [selectedView, setSelectedView] = useState<
@@ -35,14 +37,12 @@ const Dashboard = () => {
 
   const tabs: {
     id: TabView;
-    labelFR: string;
-    labelHT: string;
+    labelKey: string;
     icon: JSX.Element;
   }[] = [
     {
       id: "apercu-budgetaire",
-      labelFR: "Aperçu Budgétaire",
-      labelHT: "",
+      labelKey: "index_screen.tabs.apercu_budgetaire",
       icon: (
         <Svg
           width={16}
@@ -63,8 +63,7 @@ const Dashboard = () => {
     },
     {
       id: "vue-detaillee",
-      labelFR: "Vue détaillée",
-      labelHT: "",
+      labelKey: "index_screen.tabs.vue_detaillee",
       icon: (
         <Svg
           width={16}
@@ -85,8 +84,7 @@ const Dashboard = () => {
     },
     {
       id: "projets",
-      labelFR: "Projets",
-      labelHT: "",
+      labelKey: "index_screen.tabs.projets",
       icon: (
         <Svg
           width={16}
@@ -163,13 +161,10 @@ const Dashboard = () => {
             </View>
             <View>
               <Text className="text-gray-800">
-                Dashboard <Text className="font-bold">{user}</Text>
+                {t("index_screen.dashboard_header.dashboard")} <Text className="font-bold">{user}</Text>
               </Text>
-              {/* <Text className="text-sm text-gray-600">
-                {selectedFiscalYear?.anneeFiscale}
-              </Text> */}
               <Text className="text-sm text-gray-600">
-                Role : {role} {"\n"}Ministère {ministereId}
+                {t("index_screen.dashboard_header.role")} : {role} {"\n"}{t("index_screen.dashboard_header.ministere")} {ministereId}
               </Text>
             </View>
           </View>
@@ -190,7 +185,7 @@ const Dashboard = () => {
                 <Path d="m9 11 3 3L22 4" />
               </Svg>
               <Text className="text-green-100 text-xs font-medium">
-                En ligne
+                {t("common.online")}
               </Text>
             </View>
           </View>
@@ -248,7 +243,7 @@ const Dashboard = () => {
                       isSelected ? "text-white" : "text-gray-600"
                     }`}
                   >
-                    {tab.labelFR}
+                    {t(tab.labelKey)}
                   </Text>
                 </TouchableOpacity>
               );

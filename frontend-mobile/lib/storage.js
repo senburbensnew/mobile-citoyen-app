@@ -13,7 +13,7 @@ export const saveToken = async (token) => {
 
 export const getToken = async () => {
   if (Platform.OS === "web") {
-    return null;
+    return localStorage.getItem(TOKEN_KEY);
   } else {
     return await SecureStore.getItemAsync(TOKEN_KEY);
   }
