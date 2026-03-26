@@ -59,7 +59,7 @@ const AppContent = () => {
       icon: UserPlus,
       show: primaryRole === "ADMIN" || primaryRole === "RH",
     },
-    {
+/*     {
       id: "audit-trail" as Page,
       label: t("auditTrail"),
       icon: ClipboardList,
@@ -70,7 +70,7 @@ const AppContent = () => {
       label: t("settings"),
       icon: Settings,
       show: primaryRole === "ADMIN",
-    },
+    }, */
   ];
 
   const toggleLanguage = () => {

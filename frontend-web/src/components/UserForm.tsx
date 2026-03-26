@@ -124,6 +124,8 @@ export const UserForm = ({
 
     if (!formData.nif?.trim()) {
       newErrors.nif = "NIF requis";
+    } else if (!/^\d{3}-\d{3}-\d{3}-\d$/.test(formData.nif)) {
+      newErrors.nif = "Format invalide. Exemple: 388-634-174-3";
     }
 
     if (!formData.ninu?.trim()) {
@@ -132,6 +134,8 @@ export const UserForm = ({
 
     if (!formData.phoneNumber?.trim()) {
       newErrors.phoneNumber = "Téléphone requis";
+    } else if (!/^[2345]\d{7}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Doit commencer par 2, 3, 4 ou 5 et contenir 8 chiffres. Ex: 37001234";
     }
 
     if (!formData.username?.trim()) {
@@ -179,9 +183,6 @@ export const UserForm = ({
       newErrors.ministerId = "Minister ID requis";
     }
 
-    if (!formData.sectionId) {
-      newErrors.sectionId = "Section ID requis";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -280,8 +281,15 @@ export const UserForm = ({
           onSuccess?.();
         }
       } else {
+        const roleMap: Record<string, string> = {
+          ADMIN: "Admin",
+          RH: "RH",
+          GRAND_COMMIS: "GrandCommis",
+          FONCTIONNAIRE: "Fonctionnaire",
+        };
+
         // Create new user via API
-        const response = await api.post("/User/create", {
+        const payload = {
           username: formData.username,
           email: formData.email,
           prenom: formData.prenom,
@@ -290,11 +298,13 @@ export const UserForm = ({
           nif: formData.nif,
           ninu: formData.ninu,
           phoneNumber: formData.phoneNumber,
-          role: formData.role,
+          role: roleMap[formData.role] ?? formData.role,
           ministerId: formData.ministerId,
-          sectionId: formData.sectionId,
+          sectionId: formData.sectionId || undefined,
           password: formData.password,
-        });
+        };
+        console.log("Create user payload:", payload);
+        const response = await api.post("/User/create", payload);
 
         const createdUser = response.data;
 
@@ -341,7 +351,24 @@ export const UserForm = ({
         onSuccess?.();
       }
     } catch (error) {
-      toast.error("Une erreur est survenue");
+      const err = error as any;
+      const apiError = err?.response?.data;
+      console.error("Create user error:", err?.response);
+      if (typeof apiError === "string") {
+        toast.error(apiError);
+      } else if (Array.isArray(apiError)) {
+        toast.error(apiError.map((e: any) => e.description ?? e).join(" | "));
+      } else if (apiError?.errors) {
+        const messages = Object.entries(apiError.errors)
+          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+          .join(" | ");
+        toast.error(
+          <span className="select-text cursor-text whitespace-pre-wrap break-all">{messages}</span>,
+          { duration: 5000, dismissible: true }
+        );
+      } else {
+        toast.error("Une erreur est survenue");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -435,6 +462,17 @@ export const UserForm = ({
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email}</p>
               )}
+            </div>
+
+            {/* Creation User */}
+            <div className="space-y-2">
+              <Label htmlFor="creationUser">Créateur</Label>
+              <Input
+                id="creationUser"
+                value={currentUser?.username ?? ""}
+                readOnly
+                className="bg-muted text-muted-foreground cursor-not-allowed"
+              />
             </div>
 
             {/* Role */}
@@ -553,7 +591,7 @@ export const UserForm = ({
                 onChange={(e) =>
                   setFormData({ ...formData, nif: e.target.value })
                 }
-                placeholder="001-234-567-8"
+                placeholder="008-634-174-3"
               />
 
               {errors.nif && (
@@ -588,7 +626,7 @@ export const UserForm = ({
                 onChange={(e) =>
                   setFormData({ ...formData, phoneNumber: e.target.value })
                 }
-                placeholder="34567890"
+                placeholder="37001234"
               />
               {errors.phoneNumber && (
                 <p className="text-sm text-red-500">{errors.phoneNumber}</p>
@@ -615,7 +653,7 @@ export const UserForm = ({
 
             <div className="space-y-2">
               <Label htmlFor="sectionId">
-                Section <span className="text-red-500">*</span>
+                Section
               </Label>
               <Input
                 id="sectionId"

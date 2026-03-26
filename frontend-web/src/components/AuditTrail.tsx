@@ -11,7 +11,7 @@ import { getAuditLogs } from '../utils/storage';
 import { canViewAuditTrail } from '../utils/permissions';
 import { Search, FileText, Download } from 'lucide-react';
 import { Button } from './ui/button';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 

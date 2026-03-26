@@ -141,7 +141,7 @@ export const authenticate = async (
     if (data) {
       const user: User = {
         id: data.id,
-        username: data.username,
+        username: data.userName ?? data.username,
         email: data.email,
         prenom: data.prenom,
         nom: data.nom,

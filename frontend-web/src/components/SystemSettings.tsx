@@ -8,7 +8,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useAuth } from '../hooks/useAuth';
 import { getMinisteres, addMinistere, deleteMinistere, getDepartements, addDepartement, deleteDepartement, addAuditLog } from '../utils/storage';
 import { AuditLog } from '../types';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { Plus, Trash2, Building2, MapPin } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 

@@ -17,9 +17,9 @@ export const translations: Translations = {
     recentActivities: "Activités récentes",
 
     // Roles
-    ADMIN: "Administrateur",
-    RH: "Ressources Humaines",
-    GRAND_COMMIS: "Grand Commis",
+    ADMIN: "Admin",
+    RH: "RH",
+    GRAND_COMMIS: "GrandCommis",
     FONCTIONNAIRE: "Fonctionnaire",
 
     // User Form
@@ -125,9 +125,9 @@ export const translations: Translations = {
     recentActivities: "Aktivite resan",
 
     // Roles
-    ADMIN: "Administratè",
-    RH: "Resous Imen",
-    GRAND_COMMIS: "Gran Komi",
+    ADMIN: "Admin",
+    RH: "RH",
+    GRAND_COMMIS: "GrandCommis",
     FONCTIONNAIRE: "Fonksyonè",
 
     // User Form

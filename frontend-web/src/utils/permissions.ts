@@ -2,11 +2,11 @@ import { UserRole, User } from '../types';
 
 export const canCreateRole = (currentUserRole: UserRole, targetRole: UserRole): boolean => {
   if (currentUserRole === 'ADMIN') {
-    return targetRole === 'RH';
+    return targetRole === 'RH' || targetRole === 'GRAND_COMMIS';
   }
 
   if (currentUserRole === 'RH') {
-    return targetRole === 'GRAND_COMMIS' || targetRole === 'FONCTIONNAIRE';
+    return targetRole === 'FONCTIONNAIRE';
   }
 
   return false;
@@ -14,11 +14,11 @@ export const canCreateRole = (currentUserRole: UserRole, targetRole: UserRole): 
 
 export const getRolesForUser = (currentUserRole: UserRole): UserRole[] => {
   if (currentUserRole === 'ADMIN') {
-    return ['RH'];
+    return ['RH', 'GRAND_COMMIS'];
   }
 
   if (currentUserRole === 'RH') {
-    return ['GRAND_COMMIS', 'FONCTIONNAIRE'];
+    return ['FONCTIONNAIRE'];
   }
 
   return [];

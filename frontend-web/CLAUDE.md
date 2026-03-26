@@ -153,3 +153,49 @@ Reset localStorage in browser DevTools to re-seed mock data.
 - `filterUsersByPermissions` in `permissions.ts` uses `createdBy === currentUser.id` but `currentUser.id` may be undefined if the auth response doesn't return it — verify and fix
 - Add error handling for API failures in `UserForm` (currently shows a generic toast on any error)
 - The `extractUserInfosFromJwtToken` stub in `storage.ts` is not implemented — token claims (like ministry/role) could be parsed from it instead of relying on the login response body
+
+---
+
+## Session Log — 2026-03-26
+
+### What was done
+
+**UsersList — real API integration**
+- `loadUsers` now calls `GET /api/User` instead of localStorage; server handles filtering per role (Admin sees all, RH sees own ministry only)
+- `normalizeRole()` helper maps API role strings (`"Admin"`, `"GrandCommis"`, `"Fonctionnaire"`) to internal `UserRole` type (`"ADMIN"`, `"GRAND_COMMIS"`, `"FONCTIONNAIRE"`)
+- `mapApiUser()` builds a `User` from the API response (constructs `fullName`, derives `role` from `roles[0]`)
+- Table columns updated to match API response: removed `username`, `departement`, `status`; shows `ministereId`, `sectionId`, `phoneNumber`
+- Loading spinner added while fetching
+
+**Current user row protection**
+- Own row highlighted in blue with a `Vous` badge
+- Edit and delete buttons disabled for own row (`isSelf = user.id === currentUser?.id`)
+
+**Permission rules updated**
+- ADMIN: can create RH or GRAND_COMMIS (not ADMIN, not FONCTIONNAIRE)
+- RH: can create FONCTIONNAIRE only (server also enforces this and forces its own `ministerId`)
+- Role dropdown populated dynamically via `getRolesForUser(primaryRole)`
+
+**UserForm — API create + validation**
+- `POST /api/User/create` payload now maps internal role to API role name (`GRAND_COMMIS → "GrandCommis"`, etc.) — ASP.NET Identity role names are PascalCase
+- `sectionId` sent as `undefined` (omitted) when empty to avoid required-field errors
+- Client-side validation added: NIF must match `\d{3}-\d{3}-\d{3}-\d`; phone must start with 2/3/4/5 and be 8 digits
+- Error handling improved: ASP.NET `ValidationProblemDetails` errors (`data.errors`) shown field-by-field in toast
+- Error toast stays 5 seconds, is dismissible, and text is selectable
+- Readonly `Créateur` field shows `currentUser.username` (mapped from `data.userName ?? data.username` in `authenticate()`)
+
+**Dashboard**
+- Removed active/inactive user cards and recent activities section
+- Total count and role breakdown now fetched from `GET /api/User` with a loading spinner
+
+**Bug fixes**
+- All `import { toast } from 'sonner@2.0.3'` replaced with `'sonner'` across `AuditTrail.tsx`, `ShareCredentials.tsx`, `SystemSettings.tsx`, `ui/sonner.tsx` — was crashing the entire Vite bundle
+- `storage.ts` `authenticate()` now maps `data.userName ?? data.username` to handle ASP.NET Identity's `UserName` casing
+
+### What's next
+
+- Edit and delete user actions still call localStorage (`updateUser`, `deleteUser`) — need real API endpoints
+- `currentUser.id` may not be populated from the auth response, making `isSelf` check unreliable — verify the login response includes `id`
+- `ministereId` vs `ministerId` naming is still duplicated in the `User` type — unify once API is consistent
+- The `extractUserInfosFromJwtToken` stub in `storage.ts` is unused — role/ministry from JWT claims would be more reliable than login response body
+- Remove `console.log` statements added for debugging (`storage.ts` line 140, `UserForm.tsx` payload log)
