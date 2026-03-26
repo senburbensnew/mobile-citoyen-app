@@ -68,7 +68,25 @@
       "allocation": "Alokasyon",
       "solde": "Balans"
     },
-    "reports_section": {}
+    "reports_section": {},
+    "perspective_section": {
+      "title": "Pèspektiv pliranyèl",
+      "subtitle": "Evolisyon bidjè sou tout ane fiskal yo",
+      "tab_global": "Vi global",
+      "tab_article": "Pa atik",
+      "alloue": "Aloye",
+      "engage": "Angaje",
+      "depense": "Depanse",
+      "article_1": "Pèsonèl",
+      "article_2": "Sèvis",
+      "article_3": "Byen",
+      "article_4": "Imob. kò.",
+      "article_5": "Imob. inkò.",
+      "article_6": "Prè",
+      "article_7": "Sibvansyon",
+      "article_8": "Dèt",
+      "article_9": "Lòt"
+    }
   },
   "livepiechart": {
     "loading": "Chajman done yo...",
@@ -130,6 +148,41 @@
     "select_filter": "Seleksyone yon filtre",
     "select_category": "Seleksyone yon kategori"
   },
+  "departments": {
+    "OU": "Wès",
+    "NO": "Nò",
+    "NE": "Nòdès",
+    "NW": "Nòdwès",
+    "AR": "Latibonit",
+    "CE": "Sant",
+    "SU": "Sid",
+    "SE": "Sidès",
+    "GA": "Grandans",
+    "NI": "Nip"
+  },
+  "projets_screen": {
+    "title": "Pwojè Gouvènmantal",
+    "count": "{{count}} pwojè",
+    "loading": "Chajman pwojè yo...",
+    "error_title": "Erè pandan chajman",
+    "error_404": "Pa gen pwojè pou depatman sa",
+    "error_500": "Erè sèvè - Tanpri eseye ankò pita",
+    "error_network": "Erè koneksyon - Tanpri verifye rezo ou",
+    "error_generic": "Erè pandan chajman pwojè yo",
+    "retry": "Eseye anko",
+    "no_projects": "Pa gen pwojè disponib",
+    "no_projects_subtitle": "Depatman sa pa gen pwojè pou kounye a",
+    "select_dept": "Chwazi yon depatman pou wè pwojè yo",
+    "picker_label": "Depatman",
+    "search_placeholder": "Chèche yon pwojè oswa yon komin...",
+    "card_programme": "Pwogram",
+    "card_commune": "Komin",
+    "card_alloue": "Aloye",
+    "card_autorise": "Otorize",
+    "card_bailleur": "Bayyè",
+    "card_type_fin": "Tip",
+    "tap_dept_hint": "Touche yon depatman sou kat la"
+  },
   "parametreScreen": {
     "titre": "Paramèt",
     "langue_interface": "Lang entèfas la",
@@ -155,6 +208,7 @@
     "tentatives_echouees": "Tantativ echwe",
     "compte_demo": "Konto demonstrasyon",
     "interface_securisee": "Entèfas sa a sekirize e li rezève pou pèsonèl otorize sèlman.",
-    "tentative_non_autorisee": "Tout tantativ aksè san otorizasyon ap rapòte."
+    "tentative_non_autorisee": "Tout tantativ aksè san otorizasyon ap rapòte.",
+    "aller_accueil": "Ale nan Akèy"
   }
 }

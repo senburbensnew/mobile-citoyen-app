@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { canEditUser, canDeleteUser, filterUsersByPermissions } from '../utils/permissions';
-import { Search, Edit, Trash2, UserCheck, UserX, Download, RefreshCw } from 'lucide-react';
+import { Search, Edit, Trash2, UserCheck, UserX, Download, RefreshCw, UserPlus } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { UserForm } from './UserForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
@@ -28,6 +28,7 @@ export const UsersList = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const loadUsers = () => {
     const allUsers = getUsers();
@@ -213,6 +214,12 @@ export const UsersList = () => {
                 <Download className="h-4 w-4 mr-2" />
                 {t('export')} CSV
               </Button>
+              {(currentUser?.role === 'ADMIN' || currentUser?.role === 'RH') && (
+                <Button onClick={() => setIsCreateDialogOpen(true)} size="sm">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  {t('createUser')}
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -337,6 +344,22 @@ export const UsersList = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Create User Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('createUser')}</DialogTitle>
+          </DialogHeader>
+          <UserForm
+            onSuccess={() => {
+              setIsCreateDialogOpen(false);
+              loadUsers();
+            }}
+            onCancel={() => setIsCreateDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

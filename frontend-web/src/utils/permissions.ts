@@ -2,27 +2,25 @@ import { UserRole, User } from '../types';
 
 export const canCreateRole = (currentUserRole: UserRole, targetRole: UserRole): boolean => {
   if (currentUserRole === 'ADMIN') {
-    // Admin peut créer ADMIN, RH, GRAND_COMMIS (mais pas FONCTIONNAIRE directement)
-    return targetRole === 'ADMIN' || targetRole === 'RH' || targetRole === 'GRAND_COMMIS';
+    return targetRole === 'RH';
   }
-  
+
   if (currentUserRole === 'RH') {
-    // RH peut uniquement créer des FONCTIONNAIRE
-    return targetRole === 'FONCTIONNAIRE';
+    return targetRole === 'GRAND_COMMIS' || targetRole === 'FONCTIONNAIRE';
   }
-  
+
   return false;
 };
 
 export const getRolesForUser = (currentUserRole: UserRole): UserRole[] => {
   if (currentUserRole === 'ADMIN') {
-    return ['ADMIN', 'RH', 'GRAND_COMMIS'];
+    return ['RH'];
   }
-  
+
   if (currentUserRole === 'RH') {
-    return ['FONCTIONNAIRE'];
+    return ['GRAND_COMMIS', 'FONCTIONNAIRE'];
   }
-  
+
   return [];
 };
 

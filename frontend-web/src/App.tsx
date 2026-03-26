@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { UserRole } from "./types";
 import { AuditTrail } from "./components/AuditTrail";
 import { Dashboard } from "./components/Dashboard";
 import { Login } from "./components/Login";
@@ -20,8 +21,10 @@ import { Button } from "./components/ui/button";
 import { Toaster } from "./components/ui/sonner";
 import { UserForm } from "./components/UserForm";
 import { UsersList } from "./components/UsersList";
-import { AuthProvider, useAuth } from "./hooks/useAuth";
-import { LanguageProvider, useLanguage } from "./hooks/useLanguage";
+import { AuthProvider } from "./hooks/AuthProvider";
+import { useAuth } from "./hooks/useAuth";
+import { LanguageProvider } from "./hooks/LanguageProvider";
+import { useLanguage } from "./hooks/useLanguage";
 
 type Page = "dashboard" | "users" | "create-user" | "audit-trail" | "settings";
 
@@ -34,6 +37,8 @@ const AppContent = () => {
   if (!isAuthenticated || !currentUser) {
     return <Login />;
   }
+
+  const primaryRole = (currentUser.roles?.[0]?.toUpperCase() ?? "") as UserRole;
 
   const menuItems = [
     {
@@ -52,19 +57,19 @@ const AppContent = () => {
       id: "create-user" as Page,
       label: t("createUser"),
       icon: UserPlus,
-      show: currentUser.role === "ADMIN" || currentUser.role === "RH",
+      show: primaryRole === "ADMIN" || primaryRole === "RH",
     },
     {
       id: "audit-trail" as Page,
       label: t("auditTrail"),
       icon: ClipboardList,
-      show: currentUser.role === "ADMIN",
+      show: primaryRole === "ADMIN",
     },
     {
       id: "settings" as Page,
       label: t("settings"),
       icon: Settings,
-      show: currentUser.role === "ADMIN",
+      show: primaryRole === "ADMIN",
     },
   ];
 
@@ -169,8 +174,8 @@ const AppContent = () => {
             <p className="text-sm font-medium">
               {currentUser.prenom + " " + currentUser.nom}
             </p>
-            <Badge className={getRoleBadgeColor(currentUser.role)}>
-              {t(currentUser.role)}
+            <Badge className={getRoleBadgeColor(primaryRole)}>
+              {t(primaryRole)}
             </Badge>
           </div>
         </div>

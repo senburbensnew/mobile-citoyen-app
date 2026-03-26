@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { useLanguage } from "../hooks/useLanguage";
+import api from "../lib/api";
 import { AuditLog, User, UserRole } from "../types";
 import { getRolesForUser } from "../utils/permissions";
 import {
   addAuditLog,
-  addUser,
   getUserByEmail,
   getUserByUsername,
   updateUser,
@@ -83,6 +83,9 @@ export const UserForm = ({
     email: string;
   } | null>(null);
 
+  const primaryRole = (currentUser?.roles?.[0]?.toUpperCase() ?? "LAMBDA") as UserRole;
+  const availableRoles = getRolesForUser(primaryRole);
+
   useEffect(() => {
     if (editingUser) {
       setFormData({
@@ -102,7 +105,11 @@ export const UserForm = ({
     }
   }, [editingUser]);
 
-  const availableRoles = getRolesForUser(currentUser?.role || "LAMBDA");
+  useEffect(() => {
+    if (!editingUser && primaryRole === "RH" && currentUser?.ministereId) {
+      setFormData((prev) => ({ ...prev, ministerId: currentUser.ministereId! }));
+    }
+  }, [currentUser, editingUser, primaryRole]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -273,14 +280,13 @@ export const UserForm = ({
           onSuccess?.();
         }
       } else {
-        // Create new user
-        const newUser: User = {
-          id: `user-${Date.now()}`,
-          prenom: formData.prenom,
-          nom: formData.nom,
+        // Create new user via API
+        const response = await api.post("/User/create", {
           username: formData.username,
           email: formData.email,
-          sexe: formData.sexe as "M" | "F",
+          prenom: formData.prenom,
+          nom: formData.nom,
+          sexe: formData.sexe,
           nif: formData.nif,
           ninu: formData.ninu,
           phoneNumber: formData.phoneNumber,
@@ -288,15 +294,9 @@ export const UserForm = ({
           ministerId: formData.ministerId,
           sectionId: formData.sectionId,
           password: formData.password,
-          createdAt: new Date().toISOString(),
-          createdBy: currentUser.username,
-        };
+        });
 
-        addUser(newUser);
-
-        if (!newUser.id) {
-          throw new Error("User ID is missing");
-        }
+        const createdUser = response.data;
 
         // Create audit log
         const auditLog: AuditLog = {
@@ -305,14 +305,22 @@ export const UserForm = ({
           action: "CREATE",
           performedBy: currentUser.username,
           performedByRole: currentUser.role,
-          targetUser: newUser.prenom + " " + newUser.nom,
-          targetUserId: newUser.id,
-          details: `Création d'un nouveau ${t(newUser.role)}`,
+          targetUser: `${formData.prenom} ${formData.nom}`,
+          targetUserId: createdUser?.id ?? `user-${Date.now()}`,
+          details: `Création d'un nouveau ${t(formData.role)}`,
           ipAddress: "192.168.1.1",
         };
 
         addAuditLog(auditLog);
         toast.success(t("userCreated"));
+
+        // Share credentials
+        setShareCredentials({
+          username: formData.username,
+          password: formData.password,
+          fullName: `${formData.prenom} ${formData.nom}`,
+          email: formData.email,
+        });
 
         // Reset form
         setFormData({
@@ -331,18 +339,6 @@ export const UserForm = ({
         });
         setConfirmPassword("");
         onSuccess?.();
-
-        if (!newUser.password) {
-          throw new Error("Password is missing");
-        }
-
-        // Share credentials
-        setShareCredentials({
-          username: newUser.username,
-          password: newUser.password,
-          fullName: newUser.prenom + " " + newUser.nom,
-          email: newUser.email,
-        });
       }
     } catch (error) {
       toast.error("Une erreur est survenue");
@@ -610,6 +606,7 @@ export const UserForm = ({
                   setFormData({ ...formData, ministerId: e.target.value })
                 }
                 placeholder="4 chiffres"
+                disabled={primaryRole === "RH"}
               />
               {errors.ministerId && (
                 <p className="text-sm text-red-500">{errors.ministerId}</p>

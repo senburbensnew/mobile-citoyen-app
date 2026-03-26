@@ -71,6 +71,24 @@
     "reports_section": {
       "rapports_recents": "Rapports recents",
       "aucun_rapport_disponible": "Aucun rapport disponible"
+    },
+    "perspective_section": {
+      "title": "Perspective pluriannuelle",
+      "subtitle": "Évolution du budget sur toutes les années fiscales",
+      "tab_global": "Vue globale",
+      "tab_article": "Par article",
+      "alloue": "Alloué",
+      "engage": "Engagé",
+      "depense": "Dépensé",
+      "article_1": "Personnel",
+      "article_2": "Services",
+      "article_3": "Biens",
+      "article_4": "Immob. corp.",
+      "article_5": "Immob. incorp.",
+      "article_6": "Prêts",
+      "article_7": "Subventions",
+      "article_8": "Dette",
+      "article_9": "Autres"
     }
   },
   "livepiechart": {
@@ -133,6 +151,41 @@
     "select_filter": "Sélectionner un filtre",
     "select_category": "Sélectionner une catégorie"
   },
+  "departments": {
+    "OU": "Ouest",
+    "NO": "Nord",
+    "NE": "Nord-Est",
+    "NW": "Nord-Ouest",
+    "AR": "Artibonite",
+    "CE": "Centre",
+    "SU": "Sud",
+    "SE": "Sud-Est",
+    "GA": "Grande-Anse",
+    "NI": "Nippes"
+  },
+  "projets_screen": {
+    "title": "Projets Gouvernementaux",
+    "count": "{{count}} projets",
+    "loading": "Chargement des projets...",
+    "error_title": "Erreur de chargement",
+    "error_404": "Aucun projet trouvé pour ce département",
+    "error_500": "Erreur serveur - Veuillez réessayer plus tard",
+    "error_network": "Erreur de connexion - Vérifiez votre réseau",
+    "error_generic": "Erreur lors du chargement des projets",
+    "retry": "Réessayer",
+    "no_projects": "Aucun projet disponible",
+    "no_projects_subtitle": "Ce département n'a pas de projets pour l'instant",
+    "select_dept": "Sélectionnez un département pour voir les projets",
+    "picker_label": "Département",
+    "search_placeholder": "Rechercher un projet ou une commune...",
+    "card_programme": "Programme",
+    "card_commune": "Commune",
+    "card_alloue": "Alloué",
+    "card_autorise": "Autorisé",
+    "card_bailleur": "Bailleur",
+    "card_type_fin": "Type",
+    "tap_dept_hint": "Touchez un département sur la carte"
+  },
   "parametreScreen": {
     "titre": "Paramètres",
     "langue_interface": "Langue de l'interface",
@@ -158,6 +211,7 @@
     "tentatives_echouees": "Tentatives échouées",
     "compte_demo": "Compte de démonstration",
     "interface_securisee": "Cette interface est sécurisée et réservée au personnel autorisé.",
-    "tentative_non_autorisee": "Toute tentative d'accès non autorisée sera signalée."
+    "tentative_non_autorisee": "Toute tentative d'accès non autorisée sera signalée.",
+    "aller_accueil": "Aller à l'accueil"
   }
 }

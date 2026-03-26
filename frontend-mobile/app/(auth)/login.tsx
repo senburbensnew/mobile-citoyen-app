@@ -404,14 +404,11 @@ export default function Login() {
               </TouchableOpacity>
 
               {/* Back link */}
-              <Link href="/(root)/parametres" asChild>
+              <Link href="/(root)" asChild>
                 <TouchableOpacity style={styles.backRow} activeOpacity={0.7}>
                   <Ionicons name="arrow-back" size={16} color="#6B7280" />
                   <Text style={styles.backText}>
-                    {t(
-                      "login_screen.retour_aux_parametres",
-                      "Retour aux paramètres",
-                    )}
+                    {t("login_screen.aller_accueil", "Aller à l'accueil")}
                   </Text>
                 </TouchableOpacity>
               </Link>

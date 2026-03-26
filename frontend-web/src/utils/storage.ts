@@ -132,7 +132,7 @@ export const authenticate = async (
   password: string,
 ): Promise<{ user: User; token: string } | null> => {
   try {
-    const { data } = await api.post("/auth/login", {
+    const { data } = await api.post<Record<string, any>>("/auth/login", {
       username,
       password,
     });
@@ -140,13 +140,15 @@ export const authenticate = async (
     console.log(data);
     if (data) {
       const user: User = {
+        id: data.id,
         username: data.username,
         email: data.email,
         prenom: data.prenom,
         nom: data.nom,
         sexe: data.sexe,
         roles: Array.isArray(data.roles) ? data.roles : [data.roles],
-        ministereId: data.ministereId,
+        ministereId: data.ministereId ?? data.ministerId,
+        ministerId: data.ministerId ?? data.ministereId,
         sectionId: data.sectionId,
       };
       return { token: data.token, user };

@@ -24,8 +24,22 @@ export interface User {
   nom: string;
   sexe: "M" | "F";
   roles: UserRole[];
+  role?: UserRole;
+  status?: UserStatus;
+  fullName?: string;
+  nif?: string;
+  ninu?: string;
+  phoneNumber?: string;
+  password?: string;
   ministereId?: string;
+  ministerId?: string;
   sectionId?: string;
+  ministere?: string;
+  departement?: string;
+  createdAt?: string;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
 
 export interface AuditLog {

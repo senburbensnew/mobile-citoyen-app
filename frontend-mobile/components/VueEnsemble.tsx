@@ -10,6 +10,7 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import BarChartSection from "./BarChartSection";
 import FiltersSection from "./FiltersSection";
+import PerspectiveSection from "./PerspectiveSection";
 import PieChartSection from "./PieChartSection";
 import TotalBudgetSection from "./TotalBudgetSection";
 
@@ -58,6 +59,7 @@ const VueEnsemble = () => {
       <FiltersSection />
       <PieChartSection />
       <BarChartSection />
+      <PerspectiveSection />
     </View>
   );
 };
