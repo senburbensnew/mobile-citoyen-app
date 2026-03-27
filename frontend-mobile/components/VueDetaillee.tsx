@@ -10,11 +10,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { t } from "i18next";
 import SectionsComponent from "./SectionsComponent";
 import AlineasComponent from "./AlineasComponent";
+import PerspectiveComponent from "./PerspectiveComponent";
 import Svg, { Path } from "react-native-svg";
 
 const { width: screenWidth } = Dimensions.get("window");
 
-type ViewMode = "section" | "alinea";
+type ViewMode = "section" | "alinea" | "perspective";
 
 type VueDetailleeProps = {
   user?: string;
@@ -62,6 +63,7 @@ const VueDetaillee: React.FC<VueDetailleeProps> = ({
   const toggleButtons: Array<{ mode: ViewMode; label: string }> = [
     { mode: "section", label: t("Sections") },
     { mode: "alinea", label: t("Alinéas") },
+    { mode: "perspective", label: t("Perspective") },
   ];
 
   return (
@@ -226,7 +228,7 @@ const VueDetaillee: React.FC<VueDetailleeProps> = ({
               {t("Vue par Section et Alinéas")}
             </Text>
             <Text style={styles.headerSubtitle}>
-              {t("Visualisez par sections ou alinéas")}
+              {t("Visualisez par sections, alinéas ou perspective")}
             </Text>
           </View>
 
@@ -251,12 +253,14 @@ const VueDetaillee: React.FC<VueDetailleeProps> = ({
               role={role}
               ministereId={ministereId}
             />
-          ) : (
+          ) : viewMode === "alinea" ? (
             <AlineasComponent
               user={user}
               role={role}
               ministereId={ministereId}
             />
+          ) : (
+            <PerspectiveComponent />
           )}
         </View>
       </View>

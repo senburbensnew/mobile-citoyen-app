@@ -8,6 +8,12 @@ import {
   StyleSheet,
   useWindowDimensions,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Dropdown } from "react-native-element-dropdown";
@@ -53,6 +59,17 @@ export default function Header() {
   const { list, selectedFiscalYear } = useSelector(
     (state: RootState) => state.fiscalYears
   );
+
+  const [fiscalExpanded, setFiscalExpanded] = useState(true);
+  const fiscalAnim = useSharedValue(1);
+  const fiscalStyle = useAnimatedStyle(() => ({
+    maxHeight: withTiming(fiscalAnim.value * 160, {
+      duration: 320,
+      easing: Easing.inOut(Easing.ease),
+    }),
+    opacity: withTiming(fiscalAnim.value, { duration: 250 }),
+    overflow: "hidden",
+  }));
 
   function handleChange(anneeFiscale: string) {
     const year = list.find((y) => y.anneeFiscale === anneeFiscale);
@@ -253,7 +270,25 @@ export default function Header() {
             </View>
           </View>
 
+          {/* Fiscal year toggle button */}
+          <TouchableOpacity
+            onPress={() => {
+              const next = !fiscalExpanded;
+              fiscalAnim.value = next ? 1 : 0;
+              setFiscalExpanded(next);
+            }}
+            style={styles.fiscalToggle}
+          >
+            <Text style={styles.fiscalToggleText}>{t("Année fiscale")}</Text>
+            <Ionicons
+              name={fiscalExpanded ? "chevron-up" : "chevron-down"}
+              size={16}
+              color="rgba(255,255,255,0.8)"
+            />
+          </TouchableOpacity>
+
           {/* Dropdown for year selection */}
+          <Animated.View style={fiscalStyle}>
           <View
             style={[
               styles.dropdownContainer,
@@ -368,6 +403,7 @@ export default function Header() {
                 : selectedFiscalYear?.labelFiscale}
             </Text>
           </View>
+          </Animated.View>
         </View>
       </LinearGradient>
     </View>
@@ -496,6 +532,19 @@ const styles = StyleSheet.create({
   langTextActive: {
     color: "#1E40AF",
     fontWeight: "bold",
+  },
+  fiscalToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 12,
+    alignSelf: "center",
+  },
+  fiscalToggleText: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 12,
+    fontWeight: "500",
   },
   bellContainer: {
     position: "relative",

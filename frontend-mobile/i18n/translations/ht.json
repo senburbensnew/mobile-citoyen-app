@@ -57,7 +57,7 @@
       "dropdown_placeholder": "Chwazi yon ministè"
     },
     "piechart_section": {
-      "title": "Reparti bidjè",
+      "title": "Repatisyon bidjè",
       "subtitle_default": "Distribisyon pa atik"
     },
     "barchart_section": {
@@ -92,13 +92,14 @@
     "loading": "Chajman done yo...",
     "error_title": "Erè chajman",
     "no_data": "Pa gen done disponib pou peryòd sa a",
-    "repartition_title": "Reparti depans yo",
+    "repartition_title": "Repatisyon depans yo",
     "article": "Atik",
     "section": "Seksyon",
     "error_404": "Pa gen done",
     "error_500": "Erè sèvè - Tanpri eseye ankò pita",
     "error_network": "Erè koneksyon - Tanpri verifye rezo ou",
-    "error_generic": "Erè pandan chajman done yo"
+    "error_generic": "Erè pandan chajman done yo",
+    "article_no_designation": "Atik san deziyasyon"
   },
   "profile_screen": {
     "online": "Anliy",
@@ -113,7 +114,24 @@
     "push_notifs": "Notifikasyon push",
     "push_notifs_desc": "Alèt an tan reyèl",
     "quick_actions": "Aksyon Rapid",
+    "first_name": "Prenon",
+    "last_name": "Non",
+    "gender": "Sèks",
+    "ministry": "Ministè",
+    "section": "Seksyon",
+    "loading": "Chajman pwofil...",
+    "load_error": "Enposib pou chaje pwofil",
     "change_password": "Chanje modpas",
+    "change_password_desc": "Mete ajou modpas ou regilyèman",
+    "change_password_title": "Modifye modpas",
+    "current_password": "Modpas aktyèl",
+    "new_password": "Nouvo modpas",
+    "confirm_password": "Konfime nouvo modpas",
+    "password_mismatch": "Modpas yo pa menm",
+    "password_same": "Nouvo modpas la dwe diferan de ansyen an",
+    "password_changed": "Modpas chanje avèk siksè",
+    "save": "Anrejistre",
+    "cancel": "Anile",
     "manage_2fa": "Jesyon 2FA",
     "security_zone": "Zòn sekirite",
     "session_inactive": "Sesyon sekirize inaktif",
@@ -206,9 +224,46 @@
     "cacher_mot_de_passe": "Kache modpas la",
     "afficher_mot_de_passe": "Montre modpas la",
     "tentatives_echouees": "Tantativ echwe",
-    "compte_demo": "Konto demonstrasyon",
+    "compte_demo": "Kont demonstrasyon",
     "interface_securisee": "Entèfas sa a sekirize e li rezève pou pèsonèl otorize sèlman.",
     "tentative_non_autorisee": "Tout tantativ aksè san otorizasyon ap rapòte.",
-    "aller_accueil": "Ale nan Akèy"
+    "aller_accueil": "Ale nan Akèy",
+    "copied": "Kopye",
+    "copied_message": "Tèks kopye nan press-papye",
+    "logo": "Logo aplikasyon an",
+    "republique_haiti": "Repiblik Dayiti",
+    "connexion_securisee": "Koneksyon Sekirize",
+    "saisir_identifiants": "Antre idantifyan ou pou jwenn aksè nan tablo bò a.",
+    "nom_utilisateur": "Non itilizatè",
+    "mot_de_passe": "Modpas",
+    "se_connecter": "Konekte",
+    "identifiants_incorrects": "Idantifyan enkòrèk"
+  },
+  "header": {
+    "fiscal_year_placeholder": "Chwazi yon ane fiskal"
+  },
+  "sections_alineas": {
+    "no_data_period": "Pa gen done disponib pou peryòd sa a",
+    "repartition_title": "Repatisyon depans yo",
+    "alinea_prefix": "Alineyà",
+    "section_prefix": "Seksyon"
+  },
+  "perspective_component": {
+    "card_annee": "Evolisyon Bidjè Anyèl",
+    "card_periode": "Alokasyon pa Peryòd",
+    "card_section": "Evolisyon Seksyon Mwen an",
+    "error_annee": "Pa gen done anyèl disponib",
+    "error_periode": "Pa gen done pou peryòd sa a",
+    "error_section": "Pa gen done disponib pou seksyon ou a"
+  },
+  "vue_detaillee": {
+    "tab_sections": "Seksyon",
+    "tab_alineas": "Alineyà",
+    "tab_perspective": "Pèspektiv",
+    "budget_title": "Detay Bidjè",
+    "budget_subtitle": "Vi detaye pa Seksyon ak Alineyà",
+    "badge_grand_commis": "Gran Kòmis",
+    "header_title": "Vi pa Seksyon ak Alineyà",
+    "header_subtitle": "Wè pa seksyon, alineyà oswa pèspektiv"
   }
 }

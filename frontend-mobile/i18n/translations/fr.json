@@ -101,7 +101,8 @@
     "error_404": "Aucune donnée",
     "error_500": "Erreur serveur - Veuillez réessayer plus tard",
     "error_network": "Erreur de connexion - Vérifiez votre réseau",
-    "error_generic": "Erreur lors du chargement des données"
+    "error_generic": "Erreur lors du chargement des données",
+    "article_no_designation": "Article sans désignation"
   },
   "profile_screen": {
     "online": "En ligne",
@@ -116,7 +117,24 @@
     "push_notifs": "Notifications push",
     "push_notifs_desc": "Alertes en temps réel",
     "quick_actions": "Actions Rapides",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "gender": "Sexe",
+    "ministry": "Ministère",
+    "section": "Section",
+    "loading": "Chargement du profil...",
+    "load_error": "Impossible de charger le profil",
     "change_password": "Changer le mot de passe",
+    "change_password_desc": "Mettez à jour votre mot de passe régulièrement",
+    "change_password_title": "Modifier le mot de passe",
+    "current_password": "Mot de passe actuel",
+    "new_password": "Nouveau mot de passe",
+    "confirm_password": "Confirmer le nouveau mot de passe",
+    "password_mismatch": "Les mots de passe ne correspondent pas",
+    "password_same": "Le nouveau mot de passe doit être différent de l'ancien",
+    "password_changed": "Mot de passe modifié avec succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
     "manage_2fa": "Gestion 2FA",
     "security_zone": "Zone de sécurité",
     "session_inactive": "Session sécurisée inactive",
@@ -212,6 +230,43 @@
     "compte_demo": "Compte de démonstration",
     "interface_securisee": "Cette interface est sécurisée et réservée au personnel autorisé.",
     "tentative_non_autorisee": "Toute tentative d'accès non autorisée sera signalée.",
-    "aller_accueil": "Aller à l'accueil"
+    "aller_accueil": "Aller à l'accueil",
+    "copied": "Copié",
+    "copied_message": "Texte copié dans le presse-papier",
+    "logo": "Logo de l'application",
+    "republique_haiti": "République d'Haïti",
+    "connexion_securisee": "Connexion Sécurisée",
+    "saisir_identifiants": "Saisissez vos identifiants pour accéder au dashboard.",
+    "nom_utilisateur": "Nom d'utilisateur",
+    "mot_de_passe": "Mot de passe",
+    "se_connecter": "Se connecter",
+    "identifiants_incorrects": "Identifiants incorrects"
+  },
+  "header": {
+    "fiscal_year_placeholder": "Sélectionner une année fiscale"
+  },
+  "sections_alineas": {
+    "no_data_period": "Aucune donnée disponible pour cette période",
+    "repartition_title": "Répartition des dépenses",
+    "alinea_prefix": "Alinéa",
+    "section_prefix": "Section"
+  },
+  "perspective_component": {
+    "card_annee": "Évolution Budgétaire Annuelle",
+    "card_periode": "Allocation par Période",
+    "card_section": "Évolution de ma Section",
+    "error_annee": "Aucune donnée annuelle disponible",
+    "error_periode": "Aucune donnée pour cette période",
+    "error_section": "Aucune donnée disponible pour votre section"
+  },
+  "vue_detaillee": {
+    "tab_sections": "Sections",
+    "tab_alineas": "Alinéas",
+    "tab_perspective": "Perspective",
+    "budget_title": "Détails du Budget",
+    "budget_subtitle": "Vue détaillée par Sections et Alinéas",
+    "badge_grand_commis": "Grand Commis",
+    "header_title": "Vue par Section et Alinéas",
+    "header_subtitle": "Visualisez par sections, alinéas ou perspective"
   }
 }

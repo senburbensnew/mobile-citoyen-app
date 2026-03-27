@@ -5,545 +5,432 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  ActivityIndicator,
   TextInput,
-  Switch,
-  Pressable,
+  Alert,
 } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
+import { useState } from "react";
+import api from "@/lib/api";
+
+const { width } = Dimensions.get("window");
 
 const Citoyen = () => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
-  const router = useRouter();
+  const { user, logout, roles, ministereId, sectionId, nom, prenom, email, sexe } = useAuth();
+
+  const [showPwForm, setShowPwForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [pwSubmitting, setPwSubmitting] = useState(false);
+  const [pwError, setPwError] = useState<string | null>(null);
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleLogout = () => {
     logout();
-    // AuthGuard in _layout.tsx redirects to /(auth)/login once user becomes null
   };
 
-  const OtherCard = ({
-    title = "",
-    titleColor = "text-gray-700",
-    borderColor = "",
-    children,
-  }) => {
-    return (
-      <View
-        style={{
-          shadowColor: "#000",
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
-          elevation: 3,
-        }}
-        className={`w-full my-2 bg-white rounded-lg p-4 ${borderColor}`}
-      >
-        {/* ✅ Corrected className syntax */}
-        <Text className={`text-lg font-semibold mb-4 ${titleColor}`}>
-          {title}
-        </Text>
-        {children}
-      </View>
-    );
+  const openPwForm = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPwError(null);
+    setShowPwForm(true);
   };
+
+  const closePwForm = () => {
+    setShowPwForm(false);
+    setPwError(null);
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      setPwError(t("profile_screen.password_mismatch"));
+      return;
+    }
+    if (currentPassword === newPassword) {
+      setPwError(t("profile_screen.password_same"));
+      return;
+    }
+    setPwError(null);
+    setPwSubmitting(true);
+    try {
+      await api.post("/auth/change-password", { currentPassword, newPassword });
+      setShowPwForm(false);
+      Alert.alert("", t("profile_screen.password_changed"));
+    } catch (err: any) {
+      const serverErrors = err?.response?.data?.errors;
+      if (Array.isArray(serverErrors) && serverErrors.length > 0) {
+        setPwError(serverErrors.join("\n"));
+      } else {
+        setPwError(
+          err?.response?.data?.message || t("profile_screen.load_error")
+        );
+      }
+    } finally {
+      setPwSubmitting(false);
+    }
+  };
+
+  const initials = `${(prenom || "").charAt(0)}${(nom || "").charAt(0)}`.toUpperCase() || (user || "?").charAt(0).toUpperCase();
+  const fullName = `${prenom || ""} ${nom || ""}`.trim() || (user as string) || "";
 
   return (
     <ScrollView
-      contentContainerStyle={{
-        paddingVertical: 3,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
     >
-      <View className="py-2">
-        <View style={styles.cardWrapper}>
-          {user && (
-            <View style={[styles.section, styles.profileSection]}>
-              <View style={styles.profileHeader} className="items-center">
-                <View style={{ marginRight: 12 }} className="relative">
-                  {/* Avatar Circle */}
-                  <View className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={24}
-                      height={24}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-8 h-8"
-                    >
-                      <Path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                      <Circle cx="12" cy="7" r="4" />
-                    </Svg>
-                  </View>
+      {/* ── Hero ── */}
+      <View style={styles.hero}>
+        <View style={styles.heroDecorTop} />
+        <View style={styles.heroDecorBottom} />
 
-                  {/* Camera Button */}
-                  <TouchableOpacity className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-400">
-                    <Svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={24}
-                      height={24}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-3 h-3"
-                    >
-                      <Path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                      <Circle cx="12" cy="13" r="3" />
-                    </Svg>
-                  </TouchableOpacity>
-                </View>
-                <View>
-                  <Text style={styles.profileName}>{user}</Text>
-                  <View className="mt-2 flex-row items-center justify-center rounded-md border px-2 py-0.5 w-fit bg-green-500/20 border-green-400/30">
-                    <Svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={12}
-                      height={12}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mr-1"
-                    >
-                      <Path d="M21.801 10A10 10 0 1 1 17 3.335" />
-                      <Path d="m9 11 3 3L22 4" />
-                    </Svg>
-                    <Text className="text-green-100 text-xs font-medium">
-                      {t("common.online")}
-                    </Text>
-                  </View>
-                </View>
-              </View>
+        <View style={styles.avatarWrapper}>
+          <View style={styles.avatarRing}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{initials}</Text>
             </View>
-          )}
+          </View>
+          <View style={styles.onlineDot} />
         </View>
-        <View
-          style={styles.cardWrapper}
-          className="justify-center items-center"
-        >
-          <OtherCard title={`⚡ ${t("profile_screen.personal_info")}`}>
-            <View style={{ gap: 16 }}>
-              <View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    marginBottom: 4,
-                    color: "#374151",
-                  }}
-                >
-                  {t("profile_screen.full_name")}
-                </Text>
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    borderRadius: 6,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    fontSize: 16,
-                    backgroundColor: "#f3f3f5",
-                  }}
-                  value=""
-                  editable={false}
-                />
-              </View>
 
-              <View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    marginBottom: 4,
-                    color: "#374151",
-                  }}
-                >
-                  {t("profile_screen.email")}
-                </Text>
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    borderRadius: 6,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    fontSize: 16,
-                    backgroundColor: "#f3f3f5",
-                  }}
-                  value=""
-                  keyboardType="email-address"
-                  editable={false}
-                  autoCapitalize="none"
-                />
-              </View>
+        <Text style={styles.heroName}>{fullName || user}</Text>
 
-              <View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    marginBottom: 4,
-                    color: "#374151",
-                  }}
-                >
-                  {t("profile_screen.phone")}
-                </Text>
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    borderRadius: 6,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    fontSize: 16,
-                    backgroundColor: "#f3f3f5",
-                  }}
-                  value=""
-                  keyboardType="phone-pad"
-                  editable={false}
-                />
+        {roles?.length > 0 && (
+          <View style={styles.rolesRow}>
+            {roles.map((r) => (
+              <View key={r} style={styles.roleBadge}>
+                <Text style={styles.roleBadgeText}>{r}</Text>
               </View>
+            ))}
+          </View>
+        )}
 
-              <View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    marginBottom: 4,
-                    color: "#374151",
-                  }}
-                >
-                  {t("profile_screen.department")}
-                </Text>
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    borderRadius: 6,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    fontSize: 16,
-                    backgroundColor: "#f3f3f5",
-                  }}
-                  value=""
-                  editable={false}
-                />
-              </View>
+        <View style={styles.onlineChip}>
+          <View style={styles.onlineDotSmall} />
+          <Text style={styles.onlineText}>{t("common.online")}</Text>
+        </View>
+      </View>
+
+      <View style={styles.body}>
+        {/* ── Personal info ── */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <View style={[styles.cardIconBox, { backgroundColor: "#EFF6FF" }]}>
+              <MaterialIcons name="person" size={18} color="#2563EB" />
             </View>
-          </OtherCard>
-          <OtherCard title={`🛠️ ${t("profile_screen.preferences")}`}>
-            <View style={{ gap: 20 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "500",
-                      color: "#111827",
-                    }}
-                  >
-                    {t("profile_screen.email_notifs")}
-                  </Text>
-                  <Text
-                    style={{ fontSize: 14, color: "#6b7280", marginTop: 2 }}
-                  >
-                    {t("profile_screen.email_notifs_desc")}
-                  </Text>
-                </View>
-                <Switch />
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "500",
-                      color: "#111827",
-                    }}
-                  >
-                    {t("profile_screen.push_notifs")}
-                  </Text>
-                  <Text
-                    style={{ fontSize: 14, color: "#6b7280", marginTop: 2 }}
-                  >
-                    {t("profile_screen.push_notifs_desc")}
-                  </Text>
-                </View>
-                <Switch />
-              </View>
-            </View>
-          </OtherCard>
-          <OtherCard title={t("profile_screen.quick_actions")}>
-            <View style={{ gap: 12 }}>
-              {/* Change Password Button */}
-              <Pressable
-                style={({ pressed }) => [
-                  {
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    backgroundColor: "#ffffff",
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
-                    height: 36,
-                    width: "100%",
-                  },
-                  pressed && { backgroundColor: "#f3f4f6" },
-                ]}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 15,
-                    alignItems: "center",
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    backgroundColor: "#ffffff",
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
-                    height: 36,
-                    width: "100%",
-                  }}
-                >
-                  <Svg
-                    width={16}
-                    height={16}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#2563eb"
-                  >
-                    <Path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" />
-                    <Path d="m21 2-9.6 9.6" />
-                    <Circle cx="7.5" cy="15.5" r="5.5" />
-                  </Svg>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "500",
-                      color: "#000000",
-                    }}
-                  >
-                    {t("profile_screen.change_password")}
-                  </Text>
-                </View>
-              </Pressable>
-              {/* 2FA Management Button */}
-              <Pressable
-                style={({ pressed }) => [
-                  {
-                    flexDirection: "row",
-
-                    alignItems: "center",
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    backgroundColor: "#ffffff",
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
-                    height: 36,
-                    width: "100%",
-                  },
-                  pressed && { backgroundColor: "#f3f4f6" },
-                ]}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 5,
-                    alignItems: "center",
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: "#d1d5db",
-                    backgroundColor: "#ffffff",
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
-                    height: 36,
-                    width: "100%",
-                  }}
-                >
-                  <Svg
-                    width={16}
-                    height={16}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#16a34a"
-                  >
-                    <Path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-                  </Svg>
-                  <Text
-                    style={{
-                      marginLeft: 12,
-                      fontSize: 14,
-                      fontWeight: "500",
-                      color: "#000000",
-                    }}
-                  >
-                    {t("profile_screen.manage_2fa")}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          </OtherCard>
-          <OtherCard
-            title={t("profile_screen.security_zone")}
-            titleColor={"text-red-700"}
-            borderColor={"border border-red-500"}
-          >
-            <>
-              <View className="p-3 bg-red-50 rounded-lg">
-                <View className="flex-row items-center mb-2">
-                  <View className="w-4 h-4 justify-center items-center mr-2">
-                    <Text className="text-red-600 text-base font-bold">🛡️</Text>
-                  </View>
-                  <Text className="text-sm text-red-700 font-medium">
-                    {t("profile_screen.session_inactive")}
-                  </Text>
-                </View>
-                <Text className="text-xs text-red-600">
-                  {t("profile_screen.session_desc")}
-                </Text>
-              </View>
-              <Svg
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ marginRight: 8 }} // same as "mr-2"
-              >
-                <Path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <Polyline points="16 17 21 12 16 7" />
-                <Line x1="21" y1="12" x2="9" y2="12" />
-              </Svg>
-              <TouchableOpacity
-                style={styles.logoutButton}
-                onPress={handleLogout}
-              >
-                <FontAwesome5 name="sign-out-alt" size={14} color="#fff" />
-                <Text style={styles.logoutText}>{t("profile_screen.logout")}</Text>
-              </TouchableOpacity>
-            </>
-          </OtherCard>
-          <View
-            className="bg-white rounded-lg p-5 w-full mt-2"
-            style={{
-              shadowColor: "#000",
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-              elevation: 3,
-            }}
-          >
-            <Text className="text-center text-gray-500 text-xs">
-              {t("profile_screen.app_footer")}
-            </Text>
-            <Text className="text-center text-gray-500 text-xs mt-1">
-              {t("profile_screen.app_version")}
+            <Text style={styles.cardTitle}>
+              {t("profile_screen.personal_info")}
             </Text>
           </View>
+
+          <View>
+            <InfoRow icon="badge" label={t("profile_screen.first_name")} value={prenom || "—"} />
+            <InfoRow icon="person-outline" label={t("profile_screen.last_name")} value={nom || "—"} />
+            <InfoRow icon="email" label={t("profile_screen.email")} value={email || "—"} />
+            <InfoRow icon="wc" label={t("profile_screen.gender")} value={sexe || "—"} />
+            {ministereId != null && (
+              <InfoRow icon="account-balance" label={t("profile_screen.ministry")} value={String(ministereId)} />
+            )}
+            {sectionId != null && (
+              <InfoRow icon="layers" label={t("profile_screen.section")} value={String(sectionId)} isLast />
+            )}
+          </View>
+        </View>
+
+        {/* ── Change password CTA ── */}
+        {!showPwForm && (
+          <TouchableOpacity style={styles.changePwButton} onPress={openPwForm} activeOpacity={0.88}>
+            <View style={styles.changePwIconBox}>
+              <MaterialIcons name="lock-outline" size={22} color="#fff" />
+            </View>
+            <View style={styles.changePwText}>
+              <Text style={styles.changePwTitle}>{t("profile_screen.change_password")}</Text>
+              <Text style={styles.changePwDesc}>{t("profile_screen.change_password_desc")}</Text>
+            </View>
+            <MaterialIcons name="arrow-forward-ios" size={16} color="rgba(255,255,255,0.7)" />
+          </TouchableOpacity>
+        )}
+
+        {/* ── Change password inline form ── */}
+        {showPwForm && (
+          <View style={styles.card}>
+            <View style={styles.formHeader}>
+              <View style={[styles.cardIconBox, { backgroundColor: "#EFF6FF" }]}>
+                <MaterialIcons name="lock-outline" size={18} color="#2563EB" />
+              </View>
+              <Text style={styles.cardTitle}>{t("profile_screen.change_password_title")}</Text>
+              <TouchableOpacity onPress={closePwForm} style={styles.formClose}>
+                <MaterialIcons name="close" size={20} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+
+            {pwError && (
+              <View style={styles.pwErrorBanner}>
+                <MaterialIcons name="error-outline" size={15} color="#DC2626" />
+                <Text style={styles.pwErrorText}>{pwError}</Text>
+              </View>
+            )}
+
+            <PasswordField
+              label={t("profile_screen.current_password")}
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              show={showCurrent}
+              onToggleShow={() => setShowCurrent((v) => !v)}
+            />
+            <PasswordField
+              label={t("profile_screen.new_password")}
+              value={newPassword}
+              onChangeText={setNewPassword}
+              show={showNew}
+              onToggleShow={() => setShowNew((v) => !v)}
+            />
+            <PasswordField
+              label={t("profile_screen.confirm_password")}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              show={showConfirm}
+              onToggleShow={() => setShowConfirm((v) => !v)}
+            />
+
+            <TouchableOpacity
+              style={[styles.saveButton, pwSubmitting && { opacity: 0.6 }]}
+              onPress={handleChangePassword}
+              disabled={pwSubmitting}
+              activeOpacity={0.85}
+            >
+              {pwSubmitting
+                ? <ActivityIndicator size="small" color="#fff" />
+                : <Text style={styles.saveText}>{t("profile_screen.save")}</Text>
+              }
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.cancelButton} onPress={closePwForm} activeOpacity={0.7}>
+              <Text style={styles.cancelText}>{t("profile_screen.cancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* ── Security zone ── */}
+        <View style={[styles.card, styles.dangerCard]}>
+          <View style={styles.cardHeader}>
+            <View style={[styles.cardIconBox, { backgroundColor: "#FEF2F2" }]}>
+              <MaterialIcons name="security" size={18} color="#DC2626" />
+            </View>
+            <Text style={[styles.cardTitle, { color: "#DC2626" }]}>
+              {t("profile_screen.security_zone")}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <FontAwesome5 name="sign-out-alt" size={14} color="#fff" />
+            <Text style={styles.logoutText}>{t("profile_screen.logout")}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Footer ── */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>{t("profile_screen.app_footer")}</Text>
+          <Text style={styles.footerVersion}>{t("profile_screen.app_version")}</Text>
         </View>
       </View>
     </ScrollView>
   );
 };
 
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+type InfoRowProps = { icon: string; label: string; value: string; isLast?: boolean };
+
+const InfoRow = ({ icon, label, value, isLast = false }: InfoRowProps) => (
+  <View style={[styles.infoRow, !isLast && styles.separator]}>
+    <View style={styles.infoIconBox}>
+      <MaterialIcons name={icon as any} size={16} color="#6B7280" />
+    </View>
+    <View style={styles.infoText}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value || "—"}</Text>
+    </View>
+  </View>
+);
+
+type PasswordFieldProps = {
+  label: string;
+  value: string;
+  onChangeText: (v: string) => void;
+  show: boolean;
+  onToggleShow: () => void;
+};
+
+const PasswordField = ({ label, value, onChangeText, show, onToggleShow }: PasswordFieldProps) => (
+  <View style={styles.pwFieldWrapper}>
+    <Text style={styles.pwFieldLabel}>{label}</Text>
+    <View style={styles.pwInputRow}>
+      <TextInput
+        style={styles.pwInput}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={!show}
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      <TouchableOpacity onPress={onToggleShow} style={styles.pwEyeBtn}>
+        <Ionicons name={show ? "eye-off-outline" : "eye-outline"} size={20} color="#6B7280" />
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
 export default Citoyen;
 
-const { width } = Dimensions.get("window");
+// ── Styles ─────────────────────────────────────────────────────────────────────
+
+const BLUE = "#1B3997";
+const BLUE_LIGHT = "#2563EB";
 
 const styles = StyleSheet.create({
-  cardWrapper: {
-    width: width * 0.95,
-    alignSelf: "center",
-  },
-  section: {
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
-    marginBottom: 6,
-  },
-  profileSection: {
-    backgroundColor: "#1B3997",
-    borderWidth: 0,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
-  },
+  container: { flex: 1, backgroundColor: "#F3F4F6" },
+  scrollContent: { paddingBottom: 40 },
 
-  profileHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
+  hero: {
+    backgroundColor: BLUE,
+    paddingTop: 40, paddingBottom: 36,
+    alignItems: "center", overflow: "hidden", position: "relative",
   },
+  heroDecorTop: {
+    position: "absolute", width: 220, height: 220, borderRadius: 110,
+    backgroundColor: "rgba(255,255,255,0.05)", top: -80, right: -60,
+  },
+  heroDecorBottom: {
+    position: "absolute", width: 160, height: 160, borderRadius: 80,
+    backgroundColor: "rgba(255,255,255,0.05)", bottom: -60, left: -40,
+  },
+  avatarWrapper: { position: "relative", marginBottom: 14 },
+  avatarRing: {
+    width: 88, height: 88, borderRadius: 44,
+    borderWidth: 3, borderColor: "rgba(255,255,255,0.4)",
+    alignItems: "center", justifyContent: "center",
+  },
+  avatar: {
+    width: 76, height: 76, borderRadius: 38,
+    backgroundColor: BLUE_LIGHT, alignItems: "center", justifyContent: "center",
+  },
+  avatarText: { fontSize: 28, fontWeight: "700", color: "#fff", letterSpacing: 1 },
+  onlineDot: {
+    position: "absolute", bottom: 4, right: 4,
+    width: 16, height: 16, borderRadius: 8,
+    backgroundColor: "#22C55E", borderWidth: 2, borderColor: BLUE,
+  },
+  heroName: { fontSize: 22, fontWeight: "700", color: "#fff", letterSpacing: 0.3, marginBottom: 8 },
+  rolesRow: {
+    flexDirection: "row", flexWrap: "wrap", justifyContent: "center",
+    gap: 6, marginBottom: 10, paddingHorizontal: 24,
+  },
+  roleBadge: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderWidth: 1, borderColor: "rgba(255,255,255,0.3)",
+    borderRadius: 20, paddingHorizontal: 12, paddingVertical: 3,
+  },
+  roleBadgeText: { color: "#fff", fontSize: 12, fontWeight: "500" },
+  onlineChip: {
+    flexDirection: "row", alignItems: "center",
+    backgroundColor: "rgba(34,197,94,0.15)",
+    borderWidth: 1, borderColor: "rgba(34,197,94,0.35)",
+    borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4, gap: 6,
+  },
+  onlineDotSmall: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#22C55E" },
+  onlineText: { color: "#BBF7D0", fontSize: 12, fontWeight: "500" },
 
-  profileAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
-    backgroundColor: "#E5E7EB",
-  },
+  body: { paddingHorizontal: width * 0.04, paddingTop: 20, gap: 14 },
 
-  profileName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#fff",
+  card: {
+    backgroundColor: "#fff", borderRadius: 16, padding: 16,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
+  dangerCard: { borderWidth: 1, borderColor: "#FECACA" },
+  cardHeader: { flexDirection: "row", alignItems: "center", marginBottom: 16, gap: 10 },
+  cardIconBox: { width: 34, height: 34, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  cardTitle: { fontSize: 15, fontWeight: "700", color: "#111827" },
 
-  profileLabel: {
-    fontSize: 12,
-    color: "#fff",
+  stateRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 12 },
+  stateText: { color: "#6B7280", fontSize: 14 },
+
+  infoRow: { flexDirection: "row", alignItems: "center", paddingVertical: 11, gap: 12 },
+  infoIconBox: {
+    width: 32, height: 32, borderRadius: 8,
+    backgroundColor: "#F9FAFB", alignItems: "center", justifyContent: "center",
   },
+  infoText: { flex: 1 },
+  infoLabel: {
+    fontSize: 11, color: "#9CA3AF", fontWeight: "500",
+    textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2,
+  },
+  infoValue: { fontSize: 15, color: "#111827", fontWeight: "500" },
+  separator: { borderBottomWidth: 1, borderBottomColor: "#F3F4F6" },
+
+  changePwButton: {
+    flexDirection: "row", alignItems: "center", gap: 14,
+    backgroundColor: BLUE_LIGHT, borderRadius: 16,
+    paddingVertical: 16, paddingHorizontal: 18,
+    shadowColor: BLUE_LIGHT, shadowOpacity: 0.35,
+    shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6,
+  },
+  changePwIconBox: {
+    width: 42, height: 42, borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center", justifyContent: "center",
+  },
+  changePwText: { flex: 1 },
+  changePwTitle: { fontSize: 15, fontWeight: "700", color: "#fff" },
+  changePwDesc: { fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 2 },
+
+  formHeader: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 16 },
+  formClose: { padding: 4, marginLeft: "auto" },
+
+  pwErrorBanner: {
+    flexDirection: "row", alignItems: "flex-start", gap: 8,
+    backgroundColor: "#FEF2F2", borderRadius: 10, padding: 12, marginBottom: 16,
+  },
+  pwErrorText: { flex: 1, fontSize: 13, color: "#DC2626", lineHeight: 18 },
+  pwFieldWrapper: { marginBottom: 14 },
+  pwFieldLabel: {
+    fontSize: 12, fontWeight: "600", color: "#374151",
+    marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.4,
+  },
+  pwInputRow: {
+    flexDirection: "row", alignItems: "center",
+    borderWidth: 1, borderColor: "#D1D5DB",
+    borderRadius: 10, backgroundColor: "#F9FAFB", paddingHorizontal: 12,
+  },
+  pwInput: { flex: 1, paddingVertical: 11, fontSize: 15, color: "#111827" },
+  pwEyeBtn: { padding: 4 },
+
+  saveButton: {
+    backgroundColor: BLUE_LIGHT, borderRadius: 12,
+    paddingVertical: 14, alignItems: "center", marginTop: 4, marginBottom: 10,
+  },
+  saveText: { fontSize: 14, fontWeight: "600", color: "#fff" },
+  cancelButton: {
+    borderWidth: 1, borderColor: "#D1D5DB",
+    borderRadius: 12, paddingVertical: 13, alignItems: "center",
+  },
+  cancelText: { fontSize: 14, fontWeight: "600", color: "#374151" },
 
   logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#E7000B",
-    color: "#fff",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 8,
+    flexDirection: "row", alignItems: "center", justifyContent: "center",
+    backgroundColor: "#DC2626", paddingVertical: 13, borderRadius: 12, gap: 8,
   },
+  logoutText: { color: "#fff", fontWeight: "600", fontSize: 14 },
 
-  logoutText: {
-    color: "#fff",
-    fontWeight: "500",
-    marginLeft: 6,
-    fontSize: 13,
-  },
+  footer: { alignItems: "center", paddingVertical: 8 },
+  footerText: { fontSize: 12, color: "#9CA3AF", textAlign: "center" },
+  footerVersion: { fontSize: 11, color: "#D1D5DB", marginTop: 3 },
 });

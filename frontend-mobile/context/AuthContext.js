@@ -8,16 +8,35 @@ import { setInitialDataLoaded } from "../store/initialDataLoaded";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [role, setRole] = useState(null);
+  const [roles, setRoles] = useState([]);
   const [user, setUser] = useState(null);
   const [ministereId, setMinistereId] = useState(null);
+  const [sectionId, setSectionId] = useState(null);
+  const [nom, setNom] = useState(null);
+  const [prenom, setPrenom] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [sexe, setSexe] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Used on app restart: parse fields from stored JWT claims
+  const applyPayload = (payload) => {
+    const r = payload.role;
+    setRoles(Array.isArray(r) ? r : r ? [r] : []);
+    setMinistereId(payload.MinistereId ?? null);
+    setSectionId(payload.SectionId ?? null);
+    setPrenom(payload.given_name ?? null);
+    setNom(payload.family_name ?? null);
+    setEmail(payload.email ?? null);
+    setSexe(payload.gender ?? null);
+  };
 
   useEffect(() => {
     const loadUser = async () => {
       const token = await getToken();
       if (token) {
         try {
+          const payload = parseJwt(token);
+          applyPayload(payload);
           const { data } = await api.get("/auth/me");
           setUser(data);
         } catch (err) {
@@ -37,10 +56,14 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Réponse invalide du serveur");
       }
       await saveToken(data.token);
-      const payload = parseJwt(data.token);
-      setUser(payload.unique_name);
-      setRole(payload.role);
-      setMinistereId(payload.MinistereId);
+      setUser(data.username);
+      setRoles(data.roles ?? []);
+      setPrenom(data.prenom ?? null);
+      setNom(data.nom ?? null);
+      setEmail(data.email ?? null);
+      setSexe(data.sexe ?? null);
+      setMinistereId(data.ministereId ?? null);
+      setSectionId(data.sectionId ?? null);
       return true;
     } catch (err) {
       if (err.response) {
@@ -60,8 +83,13 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await removeToken();
     setUser(null);
-    setRole(null);
+    setRoles([]);
     setMinistereId(null);
+    setSectionId(null);
+    setNom(null);
+    setPrenom(null);
+    setEmail(null);
+    setSexe(null);
     store.dispatch(clearSelectedMinistry());
     store.dispatch(setInitialDataLoaded(false));
   };
@@ -83,8 +111,14 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        role,
+        roles,
+        role: roles[0] ?? null,
         ministereId,
+        sectionId,
+        nom,
+        prenom,
+        email,
+        sexe,
         loading,
         login,
         logout,

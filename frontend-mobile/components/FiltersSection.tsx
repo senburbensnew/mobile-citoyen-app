@@ -105,7 +105,7 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
                   style={{
                     width: 32,
                     height: 32,
-                    backgroundColor: "#DBEAFE", // blue-100
+                    backgroundColor: "#DBEAFE",
                     borderRadius: 8,
                     justifyContent: "center",
                     alignItems: "center",
@@ -115,7 +115,7 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
                     width={16}
                     height={16}
                     viewBox="0 0 24 24"
-                    stroke="#2563EB" // blue-600
+                    stroke="#2563EB"
                     strokeWidth={2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -126,13 +126,7 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
                 </View>
 
                 <View style={{ marginLeft: 8 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "500",
-                      color: "#1F2937",
-                    }}
-                  >
+                  <Text style={{ fontSize: 14, fontWeight: "500", color: "#1F2937" }}>
                     {t("index_screen.filters_section.title")}
                   </Text>
                   <Text style={{ fontSize: 10, color: "#4B5563" }}>
@@ -140,59 +134,23 @@ const FiltersSection = ({ showDropdownOnly = false }) => {
                   </Text>
                 </View>
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <View
-                  style={{
-                    paddingRight: 2,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 2,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 5,
-                      backgroundColor: "#2563EB", // blue
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 5,
-                      backgroundColor: "#EF4444", // red
-                    }}
-                  />
-                </View>
-              </View>
             </View>
 
             <Dropdown
               style={styles.dropdown}
-              data={ministriesState?.ministries || []}
-              search
-              searchPlaceholder={t("index_screen.filters_section.search_placeholder")}
-              labelField="designation"
-              valueField="id"
-              placeholder={`🏛️ ${t("index_screen.filters_section.dropdown_placeholder")}`}
-              value={selectedMinistry.selectedMinistry?.id}
-              onChange={(item) => {
-                handleMinistryChange(item);
-              }}
-              itemContainerStyle={{
-                paddingVertical: 0,
-                paddingHorizontal: 0,
-              }} // reduces option padding
-              itemTextStyle={{ fontSize: 14, paddingVertical: 0 }} // controls text padding
-              selectedTextStyle={{ fontSize: 14 }} // dropdown selected value style
+                data={ministriesState?.ministries || []}
+                search
+                searchPlaceholder={t("index_screen.filters_section.search_placeholder")}
+                labelField="designation"
+                valueField="id"
+                placeholder={`🏛️ ${t("index_screen.filters_section.dropdown_placeholder")}`}
+                value={selectedMinistry.selectedMinistry?.id}
+                onChange={(item) => {
+                  handleMinistryChange(item);
+                }}
+                itemContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0 }}
+                itemTextStyle={{ fontSize: 14, paddingVertical: 0 }}
+                selectedTextStyle={{ fontSize: 14 }}
             />
           </LinearGradient>
         </View>

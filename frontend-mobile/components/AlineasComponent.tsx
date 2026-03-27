@@ -23,6 +23,7 @@ import { RootState } from "@/store";
 import api, { API_BASE } from "@/lib/api";
 import { toMillions } from "@/services/helpers";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -64,6 +65,7 @@ const COLOR_PALETTE = [
 ];
 
 export default function AlineaComponent() {
+  const { t } = useTranslation();
   const [data, setData] = useState<AlineaData[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
@@ -112,7 +114,7 @@ export default function AlineaComponent() {
 
   useEffect(() => {
     const fetchPieChartData = async () => {
-      if (!selectedFiscalYear || !selectedMinistry) return;
+      if (!selectedFiscalYear || !ministereId) return;
 
       try {
         setLoading(true);
@@ -142,16 +144,13 @@ export default function AlineaComponent() {
         setData(formattedData);
       } catch (error: any) {
         if (error.response?.status === 404) {
-          setError(
-            // "Endpoint des articles non trouvé - Vérifiez l'URL de l'API"
-            "Aucune donnée"
-          );
+          setError(t("livepiechart.error_404"));
         } else if (error.response?.status === 500) {
-          setError("Erreur serveur - Veuillez réessayer plus tard");
+          setError(t("common.error_server"));
         } else if (error.message?.includes("Network Error")) {
-          setError("Erreur de connexion - Vérifiez votre réseau");
+          setError(t("common.error_network"));
         } else {
-          setError("Erreur lors du chargement des données des articles");
+          setError(t("common.error_loading"));
         }
 
         setData([]);
@@ -161,7 +160,7 @@ export default function AlineaComponent() {
     };
 
     fetchPieChartData();
-  }, [selectedFiscalYear, selectedMinistry]);
+  }, [selectedFiscalYear, ministereId]);
 
   useEffect(() => {
     scale.value = 1;
@@ -221,7 +220,7 @@ export default function AlineaComponent() {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.loadingText}>Chargement des données...</Text>
+          <Text style={styles.loadingText}>{t("livepiechart.loading")}</Text>
         </View>
       )}
 
@@ -234,7 +233,7 @@ export default function AlineaComponent() {
       {!loading && !error && data.length === 0 && (
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>
-            Aucune donnée disponible pour cette période
+            {t("sections_alineas.no_data_period")}
           </Text>
         </View>
       )}
@@ -291,7 +290,7 @@ export default function AlineaComponent() {
               {/* Data List */}
               <View style={styles.dataListContainer}>
                 <Text style={styles.dataListTitle}>
-                  Répartition des dépenses
+                  {t("sections_alineas.repartition_title")}
                 </Text>
 
                 <View style={styles.dataList}>
@@ -312,7 +311,7 @@ export default function AlineaComponent() {
                         <View style={styles.dataListContent}>
                           <Text style={styles.dataListLabel}>
                             <Text style={styles.dataListBold}>
-                              Alinéa {d.alineaId}
+                              {t("sections_alineas.alinea_prefix")} {d.alineaId}
                             </Text>{" "}
                             - {d.label}
                           </Text>
@@ -355,23 +354,23 @@ export default function AlineaComponent() {
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>
-                  Alinéa {modalData?.alineaId}
+                  {t("sections_alineas.alinea_prefix")} {modalData?.alineaId}
                 </Text>
                 <Text style={styles.modalSubtitle}>{modalData?.label}</Text>
 
                 <View style={styles.modalDataContainer}>
                   <DataRow
-                    label="Montant Alloué"
+                    label={t("common.montant_alloue")}
                     value={modalData?.totalMontantAlloue || 0}
                     color="#3B82F6"
                   />
                   <DataRow
-                    label="Montant Engagé"
+                    label={t("common.montant_engage")}
                     value={modalData?.totalMontantEngage || 0}
                     color="#F59E0B"
                   />
                   <DataRow
-                    label="Montant Dépensé"
+                    label={t("common.montant_depense")}
                     value={modalData?.totalMontantDepense || 0}
                     color="#10B981"
                   />
@@ -381,7 +380,7 @@ export default function AlineaComponent() {
                   style={styles.modalCloseButton}
                   onPress={() => setModalVisible(false)}
                 >
-                  <Text style={styles.modalCloseText}>Fermer</Text>
+                  <Text style={styles.modalCloseText}>{t("common.close")}</Text>
                 </TouchableOpacity>
               </View>
             </View>

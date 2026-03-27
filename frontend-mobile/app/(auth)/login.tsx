@@ -1,27 +1,27 @@
-import { useState, useCallback, useMemo } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
-  StyleSheet,
-} from "react-native";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, useRouter } from "expo-router";
-import { useAuth } from "../../hooks/useAuth";
-import * as Clipboard from "expo-clipboard";
-import "../../i18n/i18n";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import { useAuth } from "../../hooks/useAuth";
+import "../../i18n/i18n";
 
 interface LoginCredentials {
   username: string;
@@ -57,10 +57,10 @@ export default function Login() {
     return width > 1000
       ? width * 0.4
       : width > 800
-      ? width * 0.5
-      : width > 600
-      ? width * 0.7
-      : width * 0.9;
+        ? width * 0.5
+        : width > 600
+          ? width * 0.7
+          : width * 0.9;
   }, [width]);
 
   const isDisabled = useMemo(
@@ -80,29 +80,19 @@ export default function Login() {
 
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Alert.alert("Copié", "Texte copié dans le presse-papier");
+    Alert.alert(t("login_screen.copied"), t("login_screen.copied_message"));
   };
 
   const handleLogin = async () => {
     setError("");
 
     if (isLocked) {
-      setError(
-        t(
-          "login_screen.compte_bloque",
-          "Trop de tentatives. Réessayez dans 5 minutes.",
-        ),
-      );
+      setError(t("login_screen.compte_bloque"));
       return;
     }
 
     if (!credentials.username.trim() || !credentials.password.trim()) {
-      setError(
-        t(
-          "login_screen.champs_obligatoires",
-          "Tous les champs sont obligatoires",
-        ),
-      );
+      setError(t("login_screen.champs_obligatoires"));
       return;
     }
 
@@ -129,27 +119,14 @@ export default function Login() {
         error.message?.includes("network") ||
         error.message?.includes("Network")
       ) {
-        setError(
-          t(
-            "login_screen.erreur_reseau",
-            "Erreur de réseau. Vérifiez votre connexion.",
-          ),
-        );
+        setError(t("login_screen.erreur_reseau"));
       } else if (
         error.message?.includes("timeout") ||
         error.message?.includes("Timeout")
       ) {
-        setError(
-          t("login_screen.timeout", "Temps de réponse dépassé. Réessayez."),
-        );
+        setError(t("login_screen.timeout"));
       } else {
-        setError(
-          error.message ||
-            t(
-              "login_screen.identifiants_incorrects",
-              "Identifiants incorrects",
-            ),
-        );
+        setError(error.message || t("login_screen.identifiants_incorrects"));
       }
     } finally {
       setIsLoading(false);
@@ -192,15 +169,12 @@ export default function Login() {
                 <Image
                   source={require("../../assets/images/logo.png")}
                   style={styles.logoImage}
-                  accessibilityLabel={t(
-                    "login_screen.logo",
-                    "Logo de l'application",
-                  )}
+                  accessibilityLabel={t("login_screen.logo")}
                 />
               </View>
               <View style={styles.flagRow}>
                 <Text style={styles.republicText}>
-                  {t("login_screen.republique_haiti", "République d'Haïti")}
+                  {t("login_screen.republique_haiti")}
                 </Text>
                 <View style={styles.flagDots}>
                   <View style={[styles.dot, { backgroundColor: "#2563eb" }]} />
@@ -214,16 +188,10 @@ export default function Login() {
               {/* Card header */}
               <View style={styles.cardTitleArea}>
                 <Text style={styles.cardTitle}>
-                  {t(
-                    "login_screen.connexion_securisee",
-                    "Connexion Sécurisée",
-                  )}
+                  {t("login_screen.connexion_securisee")}
                 </Text>
                 <Text style={styles.cardSubtitle}>
-                  {t(
-                    "login_screen.saisissez_vos_identifiants_pour_acceder_au_dashboard.",
-                    "Saisissez vos identifiants pour accéder au dashboard.",
-                  )}
+                  {t("login_screen.saisir_identifiants")}
                 </Text>
               </View>
 
@@ -232,10 +200,7 @@ export default function Login() {
                 <View style={styles.bannerWarning}>
                   <Feather name="alert-triangle" size={16} color="#d97706" />
                   <Text style={styles.bannerWarningText}>
-                    {t(
-                      "login_screen.compte_bloque",
-                      "Trop de tentatives. Réessayez dans 5 minutes.",
-                    )}
+                    {t("login_screen.compte_bloque")}
                   </Text>
                 </View>
               )}
@@ -251,7 +216,7 @@ export default function Login() {
               {/* Username */}
               <View style={styles.fieldGroup}>
                 <Text style={styles.fieldLabel}>
-                  {t("login_screen.nom_utilisateur", "Nom d'utilisateur")}
+                  {t("login_screen.nom_utilisateur")}
                 </Text>
                 <View
                   style={[
@@ -274,19 +239,13 @@ export default function Login() {
                     onChangeText={(v) => updateCredentials("username", v)}
                     onFocus={() => setFocusedField("username")}
                     onBlur={() => setFocusedField(null)}
-                    placeholder={t(
-                      "login_screen.entrez_votre_nom_utilisateur",
-                      "Entrez votre nom d'utilisateur",
-                    )}
+                    placeholder={t("login_screen.entrez_votre_nom_utilisateur")}
                     placeholderTextColor="#9CA3AF"
                     autoCapitalize="none"
                     autoComplete="username"
                     editable={!isLoading && !isLocked}
                     returnKeyType="next"
-                    accessibilityLabel={t(
-                      "login_screen.nom_utilisateur",
-                      "Nom d'utilisateur",
-                    )}
+                    accessibilityLabel={t("login_screen.nom_utilisateur")}
                     accessibilityRole="text"
                   />
                 </View>
@@ -295,7 +254,7 @@ export default function Login() {
               {/* Password */}
               <View style={styles.fieldGroup}>
                 <Text style={styles.fieldLabel}>
-                  {t("login_screen.mot_de_passe", "Mot de passe")}
+                  {t("login_screen.mot_de_passe")}
                 </Text>
                 <View
                   style={[
@@ -337,14 +296,8 @@ export default function Login() {
                     disabled={isLoading}
                     accessibilityLabel={
                       showPassword
-                        ? t(
-                            "login_screen.cacher_mot_de_passe",
-                            "Cacher le mot de passe",
-                          )
-                        : t(
-                            "login_screen.afficher_mot_de_passe",
-                            "Afficher le mot de passe",
-                          )
+                        ? t("login_screen.cacher_mot_de_passe")
+                        : t("login_screen.afficher_mot_de_passe")
                     }
                     accessibilityRole="button"
                   >
@@ -360,8 +313,7 @@ export default function Login() {
               {/* Failed attempts */}
               {failedAttempts > 0 && !isLocked && (
                 <Text style={styles.attemptsText}>
-                  {t("login_screen.tentatives_echouees", "Tentatives échouées")}
-                  : {failedAttempts}/5
+                  {t("login_screen.tentatives_echouees")}: {failedAttempts}/5
                 </Text>
               )}
 
@@ -369,10 +321,7 @@ export default function Login() {
               <TouchableOpacity
                 onPress={handleLogin}
                 disabled={isDisabled || isLoading}
-                accessibilityLabel={t(
-                  "login_screen.se_connecter",
-                  "Se connecter",
-                )}
+                accessibilityLabel={t("login_screen.se_connecter")}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: isDisabled || isLoading }}
                 style={[
@@ -396,7 +345,7 @@ export default function Login() {
                         color="#fff"
                       />
                       <Text style={styles.loginButtonText}>
-                        {t("login_screen.se_connecter", "Se connecter")}
+                        {t("login_screen.se_connecter")}
                       </Text>
                     </>
                   )}
@@ -408,7 +357,7 @@ export default function Login() {
                 <TouchableOpacity style={styles.backRow} activeOpacity={0.7}>
                   <Ionicons name="arrow-back" size={16} color="#6B7280" />
                   <Text style={styles.backText}>
-                    {t("login_screen.aller_accueil", "Aller à l'accueil")}
+                    {t("login_screen.aller_accueil")}
                   </Text>
                 </TouchableOpacity>
               </Link>
@@ -423,7 +372,7 @@ export default function Login() {
                   color="rgba(255,255,255,0.9)"
                 />
                 <Text style={styles.demoTitle}>
-                  {t("login_screen.compte_demo", "Compte de démonstration")}
+                  {t("login_screen.compte_demo")}
                 </Text>
               </View>
 
@@ -434,9 +383,9 @@ export default function Login() {
               >
                 <View style={styles.demoRow}>
                   <Text style={styles.demoLabel}>
-                    {t("login_screen.nom_utilisateur", "Nom d'utilisateur")}:{" "}
+                    {t("login_screen.nom_utilisateur")}:{" "}
                   </Text>
-                  <Text style={styles.demoValue}>Commis1112</Text>
+                  <Text style={styles.demoValue}>Commis1111</Text>
                   <Feather
                     name="copy"
                     size={12}
@@ -453,7 +402,7 @@ export default function Login() {
               >
                 <View style={styles.demoRow}>
                   <Text style={styles.demoLabel}>
-                    {t("login_screen.mot_de_passe", "Mot de passe")}:{" "}
+                    {t("login_screen.mot_de_passe")}:{" "}
                   </Text>
                   <Text style={styles.demoValue}>Pass123$</Text>
                   <Feather
@@ -469,16 +418,10 @@ export default function Login() {
             {/* ── Security footer ── */}
             <View style={styles.footer}>
               <Text style={styles.footerText}>
-                {t(
-                  "login_screen.interface_securisee",
-                  "Cette interface est sécurisée et réservée au personnel autorisé.",
-                )}
+                {t("login_screen.interface_securisee")}
               </Text>
               <Text style={styles.footerText}>
-                {t(
-                  "login_screen.tentative_non_autorisee",
-                  "Toute tentative d'accès non autorisée sera signalée.",
-                )}
+                {t("login_screen.tentative_non_autorisee")}
               </Text>
             </View>
           </LinearGradient>
@@ -627,7 +570,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   demoRow: { flexDirection: "row", alignItems: "center" },
-  demoLabel: { fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
+  demoLabel: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.7)",
+    fontWeight: "500",
+  },
   demoValue: { fontSize: 12, color: "#fff", fontWeight: "600" },
   demoIcon: { marginLeft: 6 },
   // ── Footer ──

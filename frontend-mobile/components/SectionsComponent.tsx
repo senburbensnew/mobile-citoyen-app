@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 import api, { API_BASE } from "@/lib/api";
 import { toMillions } from "@/services/helpers";
 import { RootState } from "@/store";
@@ -63,6 +64,7 @@ const COLOR_PALETTE = [
 ];
 
 export default function SectionsComponent({}) {
+  const { t } = useTranslation();
   const [data, setData] = useState<SectionData[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
@@ -111,7 +113,7 @@ export default function SectionsComponent({}) {
 
   useEffect(() => {
     const fetchPieChartData = async () => {
-      if (!selectedFiscalYear || !selectedMinistry) return;
+      if (!selectedFiscalYear || !ministereId) return;
 
       try {
         setLoading(true);
@@ -141,16 +143,13 @@ export default function SectionsComponent({}) {
         setData(formattedData);
       } catch (error: any) {
         if (error.response?.status === 404) {
-          setError(
-            // "Endpoint des articles non trouvé - Vérifiez l'URL de l'API"
-            "Aucune donnée",
-          );
+          setError(t("livepiechart.error_404"));
         } else if (error.response?.status === 500) {
-          setError("Erreur serveur - Veuillez réessayer plus tard");
+          setError(t("common.error_server"));
         } else if (error.message?.includes("Network Error")) {
-          setError("Erreur de connexion - Vérifiez votre réseau");
+          setError(t("common.error_network"));
         } else {
-          setError("Erreur lors du chargement des données des articles");
+          setError(t("common.error_loading"));
         }
 
         setData([]);
@@ -160,7 +159,7 @@ export default function SectionsComponent({}) {
     };
 
     fetchPieChartData();
-  }, [selectedFiscalYear, selectedMinistry]);
+  }, [selectedFiscalYear, ministereId]);
 
   useEffect(() => {
     scale.value = 1;
@@ -220,7 +219,7 @@ export default function SectionsComponent({}) {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#3B82F6" />
-          <Text style={styles.loadingText}>Chargement des données...</Text>
+          <Text style={styles.loadingText}>{t("livepiechart.loading")}</Text>
         </View>
       )}
 
